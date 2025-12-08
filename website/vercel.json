@@ -1,0 +1,7 @@
+{
+  "buildCommand": "npm run build",
+  "installCommand": "npm install",
+  "framework": "docusaurus",
+  "outputDirectory": "build",
+  "devCommand": "npm run start"
+}
