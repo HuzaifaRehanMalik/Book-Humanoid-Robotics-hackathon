@@ -26,6 +26,7 @@ const config: Config = {
   projectName: 'Book-Humanoid-Robotics', // Usually your repo name.
 
   onBrokenLinks: 'throw',
+  onBrokenMarkdownLinks: 'warn',
 
   // Even if you don't use internationalization, you can use this field to set
   // useful metadata like html lang. For example, if your site is Chinese, you
@@ -45,6 +46,10 @@ const config: Config = {
           // Remove this to remove the "edit this page" links.
           editUrl:
             'https://github.com/Huzaifa-Rehan/Book-Humanoid-Robotics/tree/main/website/',
+          // Add documentation-related settings
+          routeBasePath: '/',
+          showLastUpdateTime: true,
+          editCurrentVersion: true,
         },
         blog: {
           showReadingTime: true,
@@ -85,7 +90,7 @@ const config: Config = {
           type: 'docSidebar',
           sidebarId: 'tutorialSidebar',
           position: 'left',
-          label: 'Book',
+          label: 'Textbook',
         },
         {to: '/blog', label: 'Blog', position: 'left'},
         {
@@ -99,28 +104,32 @@ const config: Config = {
       style: 'dark',
       links: [
         {
-          title: 'Docs',
+          title: 'Textbook',
           items: [
             {
               label: 'Introduction',
-              to: '/docs/',
+              to: '/docs/introduction',
+            },
+            {
+              label: 'Foundations',
+              to: '/docs/chapter1',
+            },
+            {
+              label: 'Core Systems',
+              to: '/docs/control-systems',
             },
           ],
         },
         {
-          title: 'Community',
+          title: 'Resources',
           items: [
             {
-              label: 'Stack Overflow',
-              href: 'https://stackoverflow.com/questions/tagged/docusaurus',
+              label: 'GitHub Repository',
+              href: 'https://github.com/Huzaifa-Rehan/Book-Humanoid-Robotics',
             },
             {
-              label: 'Discord',
-              href: 'https://discordapp.com/invite/docusaurus',
-            },
-            {
-              label: 'X',
-              href: 'https://x.com/docusaurus',
+              label: 'Docusaurus',
+              href: 'https://docusaurus.io',
             },
           ],
         },
@@ -131,18 +140,28 @@ const config: Config = {
               label: 'Blog',
               to: '/blog',
             },
-            {
-              label: 'GitHub',
-              href: 'https://github.com/facebook/docusaurus',
-            },
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} My Project, Inc. Built with Docusaurus.`,
+      copyright: `Copyright © ${new Date().getFullYear()} Physical AI & Humanoid Robotics Textbook. Built with Docusaurus.`,
     },
     prism: {
       theme: prismThemes.github,
       darkTheme: prismThemes.dracula,
+    },
+    // Add search functionality
+    algolia: {
+      // The application ID provided by Algolia
+      appId: 'YOUR_ALGOLIA_APP_ID',
+
+      // Public API key: it is safe to commit it
+      apiKey: 'YOUR_ALGOLIA_API_KEY',
+
+      indexName: 'physical-ai-humanoid-robotics',
+
+      contextualSearch: true,
+
+      searchPagePath: 'search',
     },
   } satisfies Preset.ThemeConfig,
 };

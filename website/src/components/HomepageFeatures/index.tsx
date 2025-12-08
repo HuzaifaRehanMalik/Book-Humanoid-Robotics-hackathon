@@ -11,32 +11,32 @@ type FeatureItem = {
 
 const FeatureList: FeatureItem[] = [
   {
-    title: 'Easy to Use',
+    title: 'Physical AI Integration',
     Svg: require('@site/static/img/undraw_docusaurus_mountain.svg').default,
     description: (
       <>
-        Docusaurus was designed from the ground up to be easily installed and
-        used to get your website up and running quickly.
+        Explore the cutting-edge intersection of artificial intelligence and physical systems,
+        where AI algorithms control and interact with the real world through robotic platforms.
       </>
     ),
   },
   {
-    title: 'Focus on What Matters',
+    title: 'Humanoid Robotics',
     Svg: require('@site/static/img/undraw_docusaurus_tree.svg').default,
     description: (
       <>
-        Docusaurus lets you focus on your docs, and we&apos;ll do the chores. Go
-        ahead and move your docs into the <code>docs</code> directory.
+        Learn about robots designed with human-like form and function, capable of operating
+        in human environments and interacting with human tools and interfaces.
       </>
     ),
   },
   {
-    title: 'Powered by React',
+    title: 'Advanced Control Systems',
     Svg: require('@site/static/img/undraw_docusaurus_react.svg').default,
     description: (
       <>
-        Extend or customize your website layout by reusing React. Docusaurus can
-        be extended while reusing the same header and footer.
+        Discover sophisticated control algorithms that enable humanoid robots to maintain
+        balance, coordinate complex movements, and adapt to dynamic environments.
       </>
     ),
   },
