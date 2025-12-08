@@ -8,7 +8,12 @@
       "Bash(npm install)",
       "Bash(npx docusaurus build)",
       "Bash(npx --no-install docusaurus build)",
-      "Bash(npx docusaurus --version)"
+      "Bash(npx docusaurus --version)",
+      "Bash($env:SPECIFY_FEATURE=\"001-ai-robotics-textbook\")",
+      "Bash(powershell.exe -Command \"$env:SPECIFY_FEATURE=''001-ai-robotics-textbook''; . .specify/scripts/powershell/check-prerequisites.ps1 -Json -RequireTasks -IncludeTasks\")",
+      "Bash(powershell.exe -Command \"Set-Item -Path env:SPECIFY_FEATURE -Value ''001-ai-robotics-textbook''; & .specify/scripts/powershell/check-prerequisites.ps1 -Json -RequireTasks -IncludeTasks\")",
+      "Bash(npx --prefix website docusaurus build)",
+      "Bash(powershell.exe -Command \"Set-Location ''D:\\Governer_IT_course\\Q4\\Hackathon\\Physical AI & Humanoid Robotics Course\\Book-Humanoid-Robotics\\website''; npx docusaurus build\")"
     ],
     "deny": [],
     "ask": []

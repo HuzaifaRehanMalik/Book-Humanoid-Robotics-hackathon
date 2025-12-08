@@ -1,0 +1,144 @@
+# Dependencies
+node_modules/
+__pycache__/
+*.pyc
+.venv/
+venv/
+env/
+dist/
+build/
+target/
+vendor/
+
+# Docusaurus
+website/build/
+website/.docusaurus/
+website/.cache-loader/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+.venv/
+.venv2/
+venv/
+venv2/
+ENV/
+.ENV
+pip-log.txt
+pip-delete-this-directory.txt
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.log
+.git/modules/
+.pytest_cache/
+.hypothesis/
+
+# Node.js/JavaScript/TypeScript
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnp/
+.pnp.js
+.next/
+.nuxt/
+.vuepress/dist/
+dist/
+coverage/
+.nyc_output/
+*.log
+
+# Build outputs
+dist/
+build/
+*.min.js
+*.min.css
+*.bundle.js
+
+# Environment variables
+.env*
+!.env.example
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Icon?
+VolumeIcon.icns
+
+# Editors
+*.sublime-workspace
+*.swp
+*.swo
+*~
+*.tmp
+
+# Python virtual environments and packages
+*.egg-info/
+.eggs/
+.eggs/*
+.venv/
+venv/
+env/
+ENV/
+.Python
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+*$py.class
+*$py.o
+*$py.d
+
+# Python development
+.coverage
+.coverage.*
+.cache
+.tox/
+nosetests.xml
+coverage.xml
+*.cover
+*.log
+
+# FastAPI/Python backend (for future API directory)
+api/venv/
+api/env/
+api/*.pyc
+api/__pycache__/
+api/*.log
+api/.env*
+api/.venv/
+
+# Database
+*.db
+*.db-journal
+
+# Secrets and sensitive data
+secrets/
+*.key
+*.pem
+*.crt
+*.cert
+*.secret.yaml
