@@ -1,0 +1,46 @@
+.figure {
+  margin: 2rem 0;
+  padding: 1rem;
+  border-radius: var(--textbook-border-radius);
+  background-color: rgba(0, 0, 0, 0.03);
+  text-align: center;
+}
+
+.content {
+  margin-bottom: 0.5rem;
+}
+
+.caption {
+  font-size: 0.9rem;
+  color: var(--ifm-color-emphasis-700);
+  font-style: italic;
+  text-align: center;
+  margin-top: 0.5rem;
+}
+
+.align-left {
+  text-align: left;
+  margin-left: 0;
+  margin-right: auto;
+}
+
+.align-center {
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.align-right {
+  text-align: right;
+  margin-left: auto;
+  margin-right: 0;
+}
+
+/* Dark mode support */
+html[data-theme='dark'] .figure {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+html[data-theme='dark'] .caption {
+  color: var(--ifm-color-emphasis-600);
+}

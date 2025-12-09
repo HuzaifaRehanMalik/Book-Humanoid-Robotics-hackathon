@@ -19,7 +19,19 @@
       "Bash(powershell.exe -Command \"Set-Location ''D:\\Governer_IT_course\\Q4\\Hackathon\\Physical AI & Humanoid Robotics Course\\Book-Humanoid-Robotics''; & .specify/scripts/powershell/check-prerequisites.ps1 -Json -RequireTasks -IncludeTasks\")",
       "Bash(dir)",
       "Bash(powershell.exe -Command \"Set-Location ''D:\\Governer_IT_course\\Q4\\Hackathon\\Physical AI & Humanoid Robotics Course\\Book-Humanoid-Robotics\\website''; npm run build\")",
-      "Bash(npx --prefix \"D:\\Governer_IT_course\\Q4\\Hackathon\\Physical AI & Humanoid Robotics Course\\Book-Humanoid-Robotics\\website\" docusaurus build)"
+      "Bash(npx --prefix \"D:\\Governer_IT_course\\Q4\\Hackathon\\Physical AI & Humanoid Robotics Course\\Book-Humanoid-Robotics\\website\" docusaurus build)",
+      "Bash(powershell.exe -Command \"$env:SPECIFY_FEATURE=''AI-Native Textbook: Physical AI & Humanoid Robotics''; . .specify/scripts/powershell/check-prerequisites.ps1 -Json -RequireTasks -IncludeTasks\")",
+      "Bash(powershell.exe -Command \"Set-Item -Path env:SPECIFY_FEATURE -Value ''AI-Native Textbook: Physical AI & Humanoid Robotics''; & .specify/scripts/powershell/check-prerequisites.ps1 -Json -RequireTasks -IncludeTasks\")",
+      "Bash(dir specs)",
+      "Bash(dir \"specs/1-ai-textbook\")",
+      "Bash(dir \"specs/001-ai-robotics-textbook\")",
+      "Bash(dir website)",
+      "Bash(dir .specify)",
+      "Bash(powershell.exe -Command \". .specify/scripts/powershell/check-prerequisites.ps1 -Json\")",
+      "Bash(powershell.exe -Command \"$env:SPECIFY_FEATURE=''AI-Native Textbook: Physical AI & Humanoid Robotics''; & .specify/scripts/powershell/check-prerequisites.ps1 -Json -RequireTasks -IncludeTasks\")",
+      "Bash(dir node_modules)",
+      "Bash(node_modules/.bin/docusaurus build)",
+      "Bash(timeout 300 node_modules/.bin/docusaurus build)"
     ],
     "deny": [],
     "ask": []

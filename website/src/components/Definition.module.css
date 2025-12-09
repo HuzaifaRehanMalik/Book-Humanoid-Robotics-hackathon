@@ -1,0 +1,24 @@
+.definition {
+  border-left: 4px solid var(--textbook-accent-color);
+  padding: 1rem 1.5rem;
+  margin: 1.5rem 0;
+  background-color: rgba(66, 133, 244, 0.05);
+  border-radius: 0 var(--textbook-border-radius) var(--textbook-border-radius) 0;
+}
+
+.term {
+  margin: 0 0 0.5rem 0;
+  color: var(--textbook-accent-color);
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.content {
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+/* Dark mode support */
+html[data-theme='dark'] .definition {
+  background-color: rgba(138, 180, 248, 0.1);
+}

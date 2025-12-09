@@ -50,6 +50,7 @@ const config: Config = {
           routeBasePath: '/',
           showLastUpdateTime: true,
           editCurrentVersion: true,
+          // Enable next and previous navigation in the sidebar
         },
         blog: {
           showReadingTime: true,

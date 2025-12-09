@@ -1,0 +1,48 @@
+.chapterNavigation {
+  margin: 2rem 0;
+  padding: 1.5rem 0;
+  border-top: 1px solid var(--ifm-toc-border-color);
+  border-bottom: 1px solid var(--ifm-toc-border-color);
+}
+
+.navLink {
+  border: 1px solid var(--ifm-color-emphasis-300);
+  border-radius: var(--textbook-border-radius);
+  padding: 1rem;
+  transition: all var(--ifm-transition-fast) ease;
+  display: block;
+  height: 100%;
+}
+
+.navLink:hover {
+  border-color: var(--textbook-accent-color);
+  text-decoration: none;
+  box-shadow: var(--textbook-box-shadow);
+}
+
+.navText {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 500;
+}
+
+.pagination-nav__sublabel {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  color: var(--ifm-color-emphasis-700);
+}
+
+.pagination-nav__link--prev .navText {
+  flex-direction: row-reverse;
+}
+
+/* Dark mode support */
+html[data-theme='dark'] .navLink {
+  border-color: var(--ifm-color-emphasis-500);
+}
+
+html[data-theme='dark'] .navLink:hover {
+  border-color: var(--textbook-accent-color);
+}

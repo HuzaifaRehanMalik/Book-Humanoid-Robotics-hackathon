@@ -1,0 +1,111 @@
+.exercise {
+  border: 1px solid;
+  border-radius: var(--textbook-border-radius);
+  margin: 1.5rem 0;
+  overflow: hidden;
+}
+
+.header {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid;
+  background-color: rgba(0, 0, 0, 0.03);
+}
+
+.title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.difficulty {
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding: 0.15rem 0.5rem;
+  border-radius: 10px;
+  text-transform: uppercase;
+}
+
+.content {
+  padding: 1rem;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+/* Difficulty-based styling */
+.difficulty-beginner {
+  border-color: #4caf50;
+}
+
+.difficulty-beginner .header {
+  background-color: rgba(76, 175, 80, 0.1);
+  color: #2e7d32;
+}
+
+.difficulty-beginner .difficulty {
+  background-color: #4caf50;
+  color: white;
+}
+
+.difficulty-intermediate {
+  border-color: #ff9800;
+}
+
+.difficulty-intermediate .header {
+  background-color: rgba(255, 152, 0, 0.1);
+  color: #ef6c00;
+}
+
+.difficulty-intermediate .difficulty {
+  background-color: #ff9800;
+  color: white;
+}
+
+.difficulty-advanced {
+  border-color: #f44336;
+}
+
+.difficulty-advanced .header {
+  background-color: rgba(244, 67, 54, 0.1);
+  color: #c62828;
+}
+
+.difficulty-advanced .difficulty {
+  background-color: #f44336;
+  color: white;
+}
+
+/* Dark mode support */
+html[data-theme='dark'] .exercise {
+  border-color: var(--ifm-color-emphasis-500);
+}
+
+html[data-theme='dark'] .header {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+html[data-theme='dark'] .difficulty-beginner {
+  border-color: #66bb6a;
+}
+
+html[data-theme='dark'] .difficulty-beginner .header {
+  background-color: rgba(76, 175, 80, 0.15);
+}
+
+html[data-theme='dark'] .difficulty-intermediate {
+  border-color: #ffb74d;
+}
+
+html[data-theme='dark'] .difficulty-intermediate .header {
+  background-color: rgba(255, 152, 0, 0.15);
+}
+
+html[data-theme='dark'] .difficulty-advanced {
+  border-color: #ef9a9a;
+}
+
+html[data-theme='dark'] .difficulty-advanced .header {
+  background-color: rgba(244, 67, 54, 0.15);
+}
