@@ -6,109 +6,256 @@
 
 /* You can override the default Infima variables here. */
 :root {
-  --ifm-color-primary: #1a73e8; /* Google blue for a tech-focused look */
-  --ifm-color-primary-dark: #1866d1;
-  --ifm-color-primary-darker: #175db9;
-  --ifm-color-primary-darkest: #134a97;
-  --ifm-color-primary-light: #3b8cff;
-  --ifm-color-primary-lighter: #599fff;
-  --ifm-color-primary-lightest: #78b4ff;
+  --ifm-color-primary: #2563eb; /* Tailwind blue-600 for modern look */
+  --ifm-color-primary-dark: #1d4ed8;
+  --ifm-color-primary-darker: #1e40af;
+  --ifm-color-primary-darkest: #1e3a8a;
+  --ifm-color-primary-light: #3b82f6;
+  --ifm-color-primary-lighter: #60a5fa;
+  --ifm-color-primary-lightest: #93c5fd;
   --ifm-code-font-size: 95%;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
 
-  /* Additional custom variables for textbook */
-  --textbook-accent-color: #4285f4;
-  --textbook-sidebar-bg: #f8f9fa;
-  --textbook-content-bg: #ffffff;
-  --textbook-text-color: #202124;
-  --textbook-border-radius: 8px;
-  --textbook-box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  /* Panaverse AI-Native style variables */
+  --panaverse-primary: #2563eb;
+  --panaverse-secondary: #7c3aed;
+  --panaverse-accent: #10b981;
+  --panaverse-bg: #f8fafc;
+  --panaverse-card-bg: #ffffff;
+  --panaverse-text: #1e293b;
+  --panaverse-border: #e2e8f0;
+  --panaverse-radius: 12px;
+  --panaverse-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 /* For readability concerns, you should choose a lighter palette in dark mode. */
 [data-theme='dark'] {
-  --ifm-color-primary: #8ab4f8;
-  --ifm-color-primary-dark: #6a9df3;
-  --ifm-color-primary-darker: #578dee;
-  --ifm-color-primary-darkest: #3372e6;
-  --ifm-color-primary-light: #a6c9ff;
-  --ifm-color-primary-lighter: #b9d6ff;
-  --ifm-color-primary-lightest: #d5e5ff;
+  --ifm-color-primary: #60a5fa;
+  --ifm-color-primary-dark: #3b82f6;
+  --ifm-color-primary-darker: #2563eb;
+  --ifm-color-primary-darkest: #1d4ed8;
+  --ifm-color-primary-light: #93c5fd;
+  --ifm-color-primary-lighter: #bfdbfe;
+  --ifm-color-primary-lightest: #dbeafe;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
 
-  /* Dark mode custom variables */
-  --textbook-accent-color: #8ab4f8;
-  --textbook-sidebar-bg: #202124;
-  --textbook-content-bg: #121212;
-  --textbook-text-color: #e8eaed;
+  /* Dark mode Panaverse variables */
+  --panaverse-primary: #3b82f6;
+  --panaverse-secondary: #a78bfa;
+  --panaverse-accent: #34d399;
+  --panaverse-bg: #0f172a;
+  --panaverse-card-bg: #1e293b;
+  --panaverse-text: #f1f5f9;
+  --panaverse-border: #334155;
+  --panaverse-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
-/* Custom styles for textbook */
+/* Panaverse AI-Native style for textbook */
 .textbook-content {
-  font-family: 'Google Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-  line-height: 1.6;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  line-height: 1.7;
+  color: var(--panaverse-text);
 }
 
-.textbook-section {
+/* Hero section styling */
+.hero {
+  background: linear-gradient(135deg, var(--panaverse-primary), var(--panaverse-secondary));
+  color: white;
+  padding: 4rem 0;
+  margin-bottom: 3rem;
+  border-radius: var(--panaverse-radius);
+  box-shadow: var(--panaverse-shadow);
+}
+
+.hero-inner {
+  max-width: var(--ifm-container-width);
+  margin: 0 auto;
+  padding: 0 var(--ifm-spacing-horizontal);
+  text-align: center;
+}
+
+.hero__title {
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.hero__subtitle {
+  font-size: 1.25rem;
+  opacity: 0.9;
   margin-bottom: 2rem;
-  padding: 1.5rem;
-  border-radius: var(--textbook-border-radius);
-  box-shadow: var(--textbook-box-shadow);
-  background-color: var(--textbook-content-bg);
 }
 
+/* Card styling for modules */
+.card-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin: 2rem 0;
+}
+
+.card {
+  background: var(--panaverse-card-bg);
+  border-radius: var(--panaverse-radius);
+  padding: 1.5rem;
+  box-shadow: var(--panaverse-shadow);
+  border: 1px solid var(--panaverse-border);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+}
+
+.card__header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.card__title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--panaverse-primary);
+}
+
+.card__body {
+  color: var(--panaverse-text);
+}
+
+/* APA-ready content styling */
+.apa-citation {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: #64748b;
+  border-left: 3px solid var(--panaverse-accent);
+  padding-left: 1rem;
+  margin: 1.5rem 0;
+}
+
+.apa-reference {
+  margin: 1rem 0;
+  padding: 0.5rem 0;
+  border-bottom: 1px dashed var(--panaverse-border);
+}
+
+/* Definition boxes */
 .textbook-definition {
-  border-left: 4px solid var(--textbook-accent-color);
+  border-left: 4px solid var(--panaverse-accent);
   padding: 1rem 1.5rem;
   margin: 1.5rem 0;
-  background-color: rgba(66, 133, 244, 0.05);
+  background-color: rgba(16, 185, 129, 0.05);
+  border-radius: 0 var(--panaverse-radius) var(--panaverse-radius) 0;
 }
 
+.textbook-theorem {
+  border-left: 4px solid var(--panaverse-primary);
+  padding: 1rem 1.5rem;
+  margin: 1.5rem 0;
+  background-color: rgba(37, 99, 235, 0.05);
+  border-radius: 0 var(--panaverse-radius) var(--panaverse-radius) 0;
+}
+
+.textbook-proof {
+  border-left: 4px solid var(--panaverse-secondary);
+  padding: 1rem 1.5rem;
+  margin: 1.5rem 0;
+  background-color: rgba(124, 58, 179, 0.05);
+  border-radius: 0 var(--panaverse-radius) var(--panaverse-radius) 0;
+}
+
+/* Figure styling */
 .textbook-figure {
   text-align: center;
-  margin: 2rem 0;
+  margin: 2rem auto;
   padding: 1rem;
-  border-radius: var(--textbook-border-radius);
-  background-color: rgba(0, 0, 0, 0.03);
+  max-width: 100%;
+  border-radius: var(--panaverse-radius);
+  background-color: rgba(0, 0, 0, 0.02);
+  border: 1px solid var(--panaverse-border);
 }
 
 .textbook-figure img {
   max-width: 100%;
   height: auto;
-  border-radius: calc(var(--textbook-border-radius) - 2px);
+  border-radius: calc(var(--panaverse-radius) - 2px);
+  display: block;
+  margin: 0 auto;
 }
 
-.textbook-equation {
-  text-align: center;
-  margin: 1.5rem 0;
-  padding: 1rem;
-  font-family: 'Latin Modern Math', 'STIX Two Math', 'Cambria Math', serif;
-  font-size: 1.2rem;
+.textbook-figure-caption {
+  font-size: 0.9rem;
+  color: #64748b;
+  margin-top: 0.5rem;
+  font-style: italic;
 }
 
-/* Improve readability for code blocks */
+/* Code block improvements */
 .prism-code {
   font-size: 0.85rem;
   line-height: 1.5;
+  border-radius: var(--panaverse-radius);
 }
 
 /* Custom sidebar styling */
 .menu {
-  background-color: var(--textbook-sidebar-bg);
+  background-color: var(--panaverse-card-bg);
+  border-radius: var(--panaverse-radius);
+  padding: 1rem;
+  box-shadow: var(--panaverse-shadow);
 }
 
 /* Better heading hierarchy */
 h1, h2, h3, h4, h5, h6 {
-  font-weight: 500;
+  font-weight: 600;
   line-height: 1.3;
+  color: var(--panaverse-text);
 }
 
 h1 {
-  border-bottom: 2px solid var(--textbook-accent-color);
+  border-bottom: 2px solid var(--panaverse-primary);
   padding-bottom: 0.5rem;
+  margin-bottom: 1.5rem;
 }
 
 h2 {
-  border-bottom: 1px solid var(--ifm-toc-border-color);
+  border-bottom: 1px solid var(--panaverse-border);
   padding-bottom: 0.3rem;
+  margin-bottom: 1.2rem;
+  color: var(--panaverse-primary);
+}
+
+/* Button styling for CTAs */
+.button--primary {
+  background-color: var(--panaverse-primary);
+  border-color: var(--panaverse-primary);
+}
+
+.button--primary:hover {
+  background-color: var(--ifm-color-primary-dark);
+  border-color: var(--ifm-color-primary-dark);
+}
+
+/* Container styling */
+.container {
+  padding: 0 var(--ifm-spacing-horizontal);
+}
+
+/* Table styling for APA format */
+.markdown table {
+  border-radius: var(--panaverse-radius);
+  overflow: hidden;
+  box-shadow: var(--panaverse-shadow);
+}
+
+.markdown table th,
+.markdown table td {
+  padding: 0.75rem;
+  border-color: var(--panaverse-border);
+}
+
+.markdown table th {
+  background-color: rgba(37, 99, 235, 0.1);
 }

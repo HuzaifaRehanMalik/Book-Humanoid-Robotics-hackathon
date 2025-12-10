@@ -47,7 +47,7 @@ const config: Config = {
           editUrl:
             'https://github.com/Huzaifa-Rehan/Book-Humanoid-Robotics/tree/main/website/',
           // Add documentation-related settings
-          routeBasePath: '/',
+          routeBasePath: '/', // Serve docs from the root
           showLastUpdateTime: true,
           editCurrentVersion: true,
           // Enable next and previous navigation in the sidebar
@@ -69,6 +69,12 @@ const config: Config = {
         },
         theme: {
           customCss: './src/css/custom.css',
+        },
+        sitemap: {
+          changefreq: 'weekly',
+          priority: 0.5,
+          ignorePatterns: ['/tags/**'],
+          filename: 'sitemap.xml',
         },
       } satisfies Preset.Options,
     ],
@@ -95,8 +101,18 @@ const config: Config = {
         },
         {to: '/blog', label: 'Blog', position: 'left'},
         {
+          to: '/settings',
+          label: 'Settings',
+          position: 'right',
+        },
+        {
           href: 'https://github.com/Huzaifa-Rehan/Book-Humanoid-Robotics',
           label: 'GitHub',
+          position: 'right',
+        },
+        {
+          href: 'https://panaversity.org',
+          label: 'Panaverse',
           position: 'right',
         },
       ],
@@ -112,12 +128,16 @@ const config: Config = {
               to: '/introduction',
             },
             {
-              label: 'Foundations',
-              to: '/chapter1',
+              label: 'ROS 2 Foundations',
+              to: '/ros2-fundamentals',
             },
             {
-              label: 'Core Systems',
-              to: '/control-systems',
+              label: 'Gazebo & Unity Simulation',
+              to: '/gazebo-unity-simulation',
+            },
+            {
+              label: 'NVIDIA Isaac',
+              to: '/nvidia-isaac',
             },
           ],
         },
@@ -132,6 +152,10 @@ const config: Config = {
               label: 'Docusaurus',
               href: 'https://docusaurus.io',
             },
+            {
+              label: 'Panaverse',
+              href: 'https://panaversity.org',
+            },
           ],
         },
         {
@@ -140,6 +164,10 @@ const config: Config = {
             {
               label: 'Blog',
               to: '/blog',
+            },
+            {
+              label: 'Textbook Overview',
+              to: '/docs/tutorial-basics/create-a-document',
             },
           ],
         },
@@ -153,12 +181,12 @@ const config: Config = {
     // Add search functionality
     algolia: {
       // The application ID provided by Algolia
-      appId: 'YOUR_ALGOLIA_APP_ID',
+      appId: process.env.ALGOLIA_APP_ID || 'YOUR_ALGOLIA_APP_ID',
 
       // Public API key: it is safe to commit it
-      apiKey: 'YOUR_ALGOLIA_API_KEY',
+      apiKey: process.env.ALGOLIA_API_KEY || 'YOUR_ALGOLIA_API_KEY',
 
-      indexName: 'physical-ai-humanoid-robotics',
+      indexName: 'physical-ai-humanoid-robotics-textbook',
 
       contextualSearch: true,
 

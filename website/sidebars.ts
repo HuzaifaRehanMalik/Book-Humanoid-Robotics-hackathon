@@ -58,6 +58,15 @@ const sidebars: SidebarsConfig = {
         'conclusion',
       ],
     },
+    {
+      type: 'category',
+      label: 'Account',
+      items: [
+        'settings',
+        'login',
+        'signup',
+      ],
+    },
   ],
 };
 
