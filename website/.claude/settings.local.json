@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "SlashCommand(/sp.phr \"Fix Docusaurus Build — Add Missing Docs\")"
+    ]
+  }
+}

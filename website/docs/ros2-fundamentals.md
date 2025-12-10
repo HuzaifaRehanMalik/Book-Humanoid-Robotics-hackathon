@@ -95,13 +95,13 @@ class JointStatePublisher(Node):
         self.joint_state_publisher.publish(state_msg)
 ```
 
-<div class="textbook-figure">
+<!-- <div class="textbook-figure">
 
 ![ROS 2 Topic Communication](/img/ros2-topic-communication.png)
 
 **Figure 1.** ROS 2 topic communication model showing multiple publishers and subscribers exchanging messages through the DDS middleware. In humanoid robotics applications, this enables distributed processing of sensor data and coordinated control of multiple subsystems.
 
-</div>
+</div> -->
 
 ### Services (Request/Response)
 

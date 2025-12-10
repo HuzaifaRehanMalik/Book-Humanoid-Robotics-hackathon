@@ -51,13 +51,13 @@ We have seen that humanoid robotics is inherently an integration challenge. Succ
 
 Perhaps one of the most significant challenges we've encountered is the "reality gap" – the difference between performance in simulation and performance in the real world. This gap affects every aspect of humanoid robotics, from perception and control to learning and adaptation. Bridging this gap remains one of the key challenges for the field.
 
-<div class="textbook-figure">
+<!-- <div class="textbook-figure">
 
 ![Humanoid Robot Future](/img/humanoid-future.png)
 
 **Figure 1.** Conceptual representation of future humanoid robots incorporating advanced AI, soft robotics, and multi-modal perception systems. These systems will represent the integration of all concepts explored throughout this textbook.
 
-</div>
+</div> -->
 
 ## Current State of the Art
 
