@@ -401,6 +401,417 @@ ROS 2's distributed architecture enables coordination of multiple humanoid robot
 - Collaborative task execution and load balancing
 - Inter-robot communication and coordination
 
+## Advanced ROS 2 Concepts for Humanoid Robotics
+
+### Real-Time Systems and Deterministic Behavior
+
+Real-time performance is critical for humanoid robots, especially for control systems that must maintain balance and respond to environmental changes within strict timing constraints.
+
+#### Real-Time Scheduling
+
+```python
+import rclpy
+from rclpy.qos import QoSProfile
+from rclpy.node import Node
+from rclpy.executors import MultiThreadedExecutor
+import threading
+from control_msgs.msg import JointTrajectoryControllerState
+import time
+
+class RealTimeHumanoidController(Node):
+    def __init__(self):
+        super().__init__('realtime_humanoid_controller')
+
+        # Set up real-time publisher with high frequency
+        self.joint_cmd_pub = self.create_publisher(
+            JointTrajectoryControllerState,
+            'joint_commands',
+            QoSProfile(depth=1, reliability=1, durability=2)  # RELIABLE, TRANSIENT_LOCAL
+        )
+
+        # Create timer for real-time control loop (1000Hz for critical control)
+        self.control_timer = self.create_timer(
+            0.001,  # 1ms = 1000Hz
+            self.real_time_control_callback,
+            clock=self.get_clock()
+        )
+
+        # Track timing performance
+        self.last_callback_time = self.get_clock().now()
+
+    def real_time_control_callback(self):
+        current_time = self.get_clock().now()
+        time_diff = (current_time - self.last_callback_time).nanoseconds / 1e9
+
+        # Log timing jitter
+        if time_diff > 0.002:  # More than 2ms delay
+            self.get_logger().warn(f'Timing jitter detected: {time_diff:.4f}s')
+
+        self.last_callback_time = current_time
+
+        # Perform critical control calculations here
+        self.perform_control_step()
+
+    def perform_control_step(self):
+        """Implement critical control logic with deterministic timing"""
+        # Balance control, joint position updates, etc.
+        pass
+```
+
+#### Real-Time Optimizations
+
+- **CPU Affinity**: Pin critical nodes to specific CPU cores
+- **Memory Locking**: Prevent critical data from being swapped to disk
+- **Priority Scheduling**: Use SCHED_FIFO for real-time threads
+- **Deterministic Algorithms**: Avoid algorithms with variable execution time
+
+### Advanced Launch Systems
+
+Complex humanoid robots require sophisticated launch configurations that can handle multiple subsystems:
+
+```python
+# advanced_humanoid_launch.py
+from launch import LaunchDescription
+from launch.actions import DeclareLaunchArgument, TimerAction
+from launch.conditions import IfCondition
+from launch.substitutions import LaunchConfiguration
+from launch_ros.actions import Node, ComposableNodeContainer
+from launch_ros.descriptions import ComposableNode
+import os
+
+def generate_launch_description():
+    # Declare launch arguments
+    use_sim_time = DeclareLaunchArgument(
+        'use_sim_time',
+        default_value='false',
+        description='Use simulation time'
+    )
+
+    robot_name = DeclareLaunchArgument(
+        'robot_name',
+        default_value='my_humanoid',
+        description='Name of the robot'
+    )
+
+    enable_vision = DeclareLaunchArgument(
+        'enable_vision',
+        default_value='true',
+        description='Enable vision processing nodes'
+    )
+
+    # Composable container for real-time critical nodes
+    critical_container = ComposableNodeContainer(
+        name='critical_control_container',
+        namespace=LaunchConfiguration('robot_name'),
+        package='rclcpp_components',
+        executable='component_container_mt',  # Multi-threaded container
+        composable_node_descriptions=[
+            ComposableNode(
+                package='humanoid_control',
+                plugin='humanoid_control::BalanceController',
+                name='balance_controller',
+                parameters=[{
+                    'use_sim_time': LaunchConfiguration('use_sim_time'),
+                    'control_frequency': 1000,  # 1000Hz
+                    'kp': 10.0,
+                    'kd': 1.0
+                }]
+            ),
+            ComposableNode(
+                package='humanoid_control',
+                plugin='humanoid_control::JointStatePublisher',
+                name='joint_state_publisher',
+                parameters=[{
+                    'use_sim_time': LaunchConfiguration('use_sim_time'),
+                    'publish_frequency': 500  # 500Hz
+                }]
+            ),
+        ],
+        output='screen',
+    )
+
+    # Separate nodes for non-critical processing
+    perception_nodes = [
+        Node(
+            package='humanoid_perception',
+            executable='object_detector',
+            name='object_detector',
+            parameters=[
+                {'use_sim_time': LaunchConfiguration('use_sim_time')},
+                os.path.join(get_package_share_directory('humanoid_perception'), 'config', 'object_detection.yaml')
+            ],
+            condition=IfCondition(LaunchConfiguration('enable_vision')),
+            respawn=True,
+            respawn_delay=2
+        ),
+        Node(
+            package='humanoid_perception',
+            executable='person_tracker',
+            name='person_tracker',
+            parameters=[{'use_sim_time': LaunchConfiguration('use_sim_time')}],
+            condition=IfCondition(LaunchConfiguration('enable_vision')),
+        )
+    ]
+
+    # Launch nodes with staggered startup to avoid resource conflicts
+    launch_description = LaunchDescription([
+        use_sim_time,
+        robot_name,
+        enable_vision,
+        critical_container,
+    ])
+
+    # Add perception nodes with delay
+    for i, node in enumerate(perception_nodes):
+        launch_description.add_action(
+            TimerAction(
+                period=2.0 * (i + 1),  # Stagger startup by 2 seconds
+                actions=[node]
+            )
+        )
+
+    return launch_description
+```
+
+### ROS 2 for Multi-Robot Systems
+
+Humanoid robots often operate in teams or alongside other robots:
+
+```python
+# multi_humanoid_coordinator.py
+import rclpy
+from rclpy.node import Node
+from std_msgs.msg import String
+from geometry_msgs.msg import PoseStamped
+from multi_robot_msgs.msg import RobotStatus, CoordinationCommand
+
+class MultiHumanoidCoordinator(Node):
+    def __init__(self):
+        super().__init__('multi_humanoid_coordinator')
+
+        # Subscribe to status from all robots
+        self.robot_statuses = {}
+        self.robot_subscribers = []
+
+        # Robot IDs for the team
+        self.robot_ids = ['humanoid_01', 'humanoid_02', 'humanoid_03']
+
+        for robot_id in self.robot_ids:
+            status_sub = self.create_subscription(
+                RobotStatus,
+                f'/{robot_id}/status',
+                lambda msg, rid=robot_id: self.robot_status_callback(msg, rid),
+                10
+            )
+            self.robot_subscribers.append(status_sub)
+
+        # Publisher for coordination commands
+        self.coordination_pub = self.create_publisher(
+            CoordinationCommand,
+            'coordination_commands',
+            10
+        )
+
+        # Timer for coordination logic
+        self.coordination_timer = self.create_timer(
+            0.1,  # 10Hz coordination
+            self.coordination_callback
+        )
+
+    def robot_status_callback(self, msg, robot_id):
+        """Update status of a specific robot"""
+        self.robot_statuses[robot_id] = {
+            'position': msg.position,
+            'task': msg.current_task,
+            'battery': msg.battery_level,
+            'status': msg.robot_status
+        }
+
+    def coordination_callback(self):
+        """Implement multi-robot coordination logic"""
+        # Example: Task allocation based on robot capabilities and positions
+        available_robots = [
+            rid for rid, status in self.robot_statuses.items()
+            if status['status'] == 'IDLE'
+        ]
+
+        # Allocate tasks based on proximity and capability
+        if available_robots:
+            # Simple round-robin task allocation
+            task = self.get_next_task()
+            if task:
+                target_robot = available_robots[0]  # Simple allocation
+                self.assign_task_to_robot(target_robot, task)
+
+    def get_next_task(self):
+        """Get the next task from a task queue"""
+        # Implementation would depend on task management system
+        return None
+
+    def assign_task_to_robot(self, robot_id, task):
+        """Send task assignment to specific robot"""
+        cmd = CoordinationCommand()
+        cmd.target_robot = robot_id
+        cmd.task_description = task
+        cmd.command_type = 'TASK_ASSIGNMENT'
+
+        self.coordination_pub.publish(cmd)
+```
+
+### Performance Monitoring and Diagnostics
+
+Monitoring system performance is crucial for humanoid robots:
+
+```python
+# diagnostic_monitor.py
+import rclpy
+from rclpy.node import Node
+from diagnostic_msgs.msg import DiagnosticArray, DiagnosticStatus, KeyValue
+from rcl_interfaces.msg import ParameterDescriptor
+from std_msgs.msg import Float64
+
+class HumanoidDiagnostics(Node):
+    def __init__(self):
+        super().__init__('humanoid_diagnostics')
+
+        # Publisher for diagnostic messages
+        self.diag_pub = self.create_publisher(DiagnosticArray, '/diagnostics', 10)
+
+        # Publishers for specific metrics
+        self.cpu_usage_pub = self.create_publisher(Float64, 'system/cpu_usage', 10)
+        self.memory_usage_pub = self.create_publisher(Float64, 'system/memory_usage', 10)
+
+        # Timer for diagnostic collection
+        self.diag_timer = self.create_timer(1.0, self.collect_diagnostics)
+
+        # Track performance metrics
+        self.metrics = {
+            'cpu_usage': 0.0,
+            'memory_usage': 0.0,
+            'network_latency': 0.0,
+            'control_loop_jitter': 0.0
+        }
+
+    def collect_diagnostics(self):
+        """Collect system diagnostics and publish"""
+        # Collect system metrics (implementation would interface with system monitoring)
+        self.metrics['cpu_usage'] = self.get_cpu_usage()
+        self.metrics['memory_usage'] = self.get_memory_usage()
+
+        # Create diagnostic message
+        diag_array = DiagnosticArray()
+        diag_array.header.stamp = self.get_clock().now().to_msg()
+
+        # Create status for overall system
+        system_status = DiagnosticStatus()
+        system_status.name = 'Humanoid Robot System'
+        system_status.level = DiagnosticStatus.OK
+        system_status.message = 'All systems nominal'
+
+        # Add key-value pairs for metrics
+        system_status.values = [
+            KeyValue(key='CPU Usage (%)', value=f"{self.metrics['cpu_usage']:.2f}"),
+            KeyValue(key='Memory Usage (%)', value=f"{self.metrics['memory_usage']:.2f}"),
+            KeyValue(key='Control Loop Jitter (ms)', value=f"{self.metrics['control_loop_jitter']:.2f}")
+        ]
+
+        # Check for issues and update status level if needed
+        if self.metrics['cpu_usage'] > 90.0:
+            system_status.level = DiagnosticStatus.WARN
+            system_status.message = 'High CPU usage detected'
+        elif self.metrics['memory_usage'] > 95.0:
+            system_status.level = DiagnosticStatus.ERROR
+            system_status.message = 'Memory usage critical'
+
+        diag_array.status.append(system_status)
+        self.diag_pub.publish(diag_array)
+
+        # Publish individual metrics
+        self.cpu_usage_pub.publish(Float64(data=self.metrics['cpu_usage']))
+        self.memory_usage_pub.publish(Float64(data=self.metrics['memory_usage']))
+
+    def get_cpu_usage(self):
+        """Get current CPU usage"""
+        # Implementation would use system tools like psutil
+        import psutil
+        return psutil.cpu_percent(interval=None)
+
+    def get_memory_usage(self):
+        """Get current memory usage"""
+        import psutil
+        return psutil.virtual_memory().percent
+```
+
+### Advanced Communication Patterns
+
+#### Lifecycle Nodes for Better Resource Management
+
+```python
+from rclpy.lifecycle import LifecycleNode, LifecycleState, TransitionCallbackReturn
+from rclpy.qos import QoSProfile
+from sensor_msgs.msg import JointState
+
+class LifecycleHumanoidController(LifecycleNode):
+    def __init__(self):
+        super().__init__('lifecycle_humanoid_controller')
+        self.joint_pub = None
+
+    def on_configure(self, state: LifecycleState) -> TransitionCallbackReturn:
+        """Configure the node"""
+        self.get_logger().info(f'Configuring {self.get_name()}')
+
+        # Create publisher only when configured
+        self.joint_pub = self.create_publisher(
+            JointState,
+            'joint_states',
+            QoSProfile(depth=10)
+        )
+
+        return TransitionCallbackReturn.SUCCESS
+
+    def on_activate(self, state: LifecycleState) -> TransitionCallbackReturn:
+        """Activate the node"""
+        self.get_logger().info(f'Activating {self.get_name()}')
+
+        # Activate publisher
+        self.joint_pub.on_activate()
+
+        # Create timer for control loop
+        self.control_timer = self.create_timer(0.01, self.control_callback)
+
+        return TransitionCallbackReturn.SUCCESS
+
+    def on_deactivate(self, state: LifecycleState) -> TransitionCallbackReturn:
+        """Deactivate the node"""
+        self.get_logger().info(f'Deactivating {self.get_name()}')
+
+        # Deactivate publisher
+        self.joint_pub.on_deactivate()
+
+        # Destroy timer
+        self.destroy_timer(self.control_timer)
+
+        return TransitionCallbackReturn.SUCCESS
+
+    def on_cleanup(self, state: LifecycleState) -> TransitionCallbackReturn:
+        """Clean up the node"""
+        self.get_logger().info(f'Cleaning up {self.get_name()}')
+
+        # Destroy publisher
+        self.destroy_publisher(self.joint_pub)
+        self.joint_pub = None
+
+        return TransitionCallbackReturn.SUCCESS
+
+    def control_callback(self):
+        """Control loop callback"""
+        # Publish joint states
+        msg = JointState()
+        msg.name = ['joint1', 'joint2', 'joint3']
+        msg.position = [0.0, 0.0, 0.0]
+        self.joint_pub.publish(msg)
+```
+
 ## Best Practices for Humanoid Robotics
 
 ### Performance Considerations
@@ -409,6 +820,9 @@ ROS 2's distributed architecture enables coordination of multiple humanoid robot
 - Implement efficient serialization for high-frequency data like sensor readings
 - Monitor network performance in distributed systems to identify bottlenecks
 - Use composable nodes for real-time critical applications to reduce communication overhead
+- Implement real-time scheduling for critical control loops
+- Optimize message sizes to reduce network overhead
+- Use efficient data structures for real-time processing
 
 ### Safety and Reliability
 
@@ -416,6 +830,9 @@ ROS 2's distributed architecture enables coordination of multiple humanoid robot
 - Use latching for critical state topics that must persist across node restarts
 - Implement timeouts for blocking operations to prevent system hangs
 - Design fail-safe mechanisms that bring the robot to a safe state when errors occur
+- Use lifecycle nodes for better resource management
+- Implement comprehensive diagnostics and monitoring
+- Design for fault tolerance with redundant systems
 
 ### Code Organization
 
@@ -423,6 +840,9 @@ ROS 2's distributed architecture enables coordination of multiple humanoid robot
 - Use composition over multiple executables when real-time performance is critical
 - Implement comprehensive logging and diagnostics for debugging and monitoring
 - Structure packages around functional components rather than programming languages
+- Use parameter files for configuration management
+- Implement proper testing strategies (unit, integration, system)
+- Document interfaces and data flow clearly
 
 ## Exercises and Labs
 

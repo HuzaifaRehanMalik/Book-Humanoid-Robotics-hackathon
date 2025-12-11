@@ -51,11 +51,11 @@ $$
 When including figures, use the following format:
 
 ```md
-import figure from './path/to/figure.png';
+import figure from '@site/static/img/docusaurus.png';
 
 <div class="textbook-figure">
 
-![Figure Caption](./path/to/figure.png)
+![Figure Caption](/img/docusaurus.png)
 
 *Figure Caption: Detailed description of the figure.*
 

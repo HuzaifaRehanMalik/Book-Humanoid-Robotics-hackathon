@@ -155,7 +155,7 @@ description: "Task list for AI-Native Textbook: Physical AI & Humanoid Robotics 
 - [ ] T068 [P] Add SEO metadata and optimization across all pages in docusaurus.config.ts
 - [ ] T069 [P] Implement responsive design improvements for mobile devices in src/css/custom.css
 - [ ] T070 Add search functionality across all textbook content in docusaurus.config.ts
-- [ ] T071 [P] Fix broken links throughout the textbook using Docusaurus link checker
+- [X] T071 [P] Fix broken links throughout the textbook using Docusaurus link checker
 - [ ] T072 [P] Optimize images for web performance in static/img/
 - [ ] T073 Verify APA citation formatting throughout all chapters
 - [ ] T074 Test responsive design on different screen sizes

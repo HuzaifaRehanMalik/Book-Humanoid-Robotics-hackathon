@@ -371,4 +371,521 @@ Particle filters handle non-linear, non-Gaussian systems:
 - **Replacement Planning**: Managing sensor lifecycles
 - **Cost Management**: Balancing performance and cost
 
-Sensor systems in humanoid robotics represent a critical component that enables these robots to perceive, understand, and interact with their environment. The successful integration of diverse sensor technologies, combined with sophisticated processing algorithms, enables humanoid robots to operate safely and effectively in human environments.
+## Advanced Sensor Technologies
+
+### Event-Based Sensors
+
+Event-based sensors represent a paradigm shift from traditional frame-based sensing, providing asynchronous, sparse data that captures changes in the environment:
+
+#### Event Cameras
+Event cameras output asynchronous "events" when pixels detect brightness changes, offering several advantages for humanoid robotics:
+
+- **High Temporal Resolution**: Microsecond-level temporal precision
+- **Low Latency**: Asynchronous updates without frame delays
+- **High Dynamic Range**: Over 120dB compared to 60dB for traditional cameras
+- **Low Bandwidth**: Only transmits changed pixels
+- **No Motion Blur**: Since only changes are recorded
+
+```python
+class EventCameraProcessor:
+    def __init__(self, width=640, height=480):
+        self.width = width
+        self.height = height
+        self.last_frame_time = 0
+        self.event_buffer = []
+
+    def process_events(self, events):
+        """
+        Process asynchronous events from event camera
+        events: list of (x, y, polarity, timestamp) tuples
+        """
+        # Filter events by time window
+        recent_events = [
+            e for e in events
+            if e[3] > self.last_frame_time  # timestamp > last processing time
+        ]
+
+        # Generate frame from events
+        frame = self.generate_frame_from_events(recent_events)
+
+        # Extract motion features
+        motion_features = self.extract_motion_features(recent_events)
+
+        self.last_frame_time = max(e[3] for e in recent_events) if recent_events else self.last_frame_time
+
+        return {
+            'frame': frame,
+            'motion': motion_features,
+            'timestamp': self.last_frame_time
+        }
+
+    def generate_frame_from_events(self, events):
+        """Generate intensity frame from accumulated events"""
+        frame = np.zeros((self.height, self.width), dtype=np.uint8)
+
+        for x, y, polarity, timestamp in events:
+            if 0 <= x < self.width and 0 <= y < self.height:
+                if polarity > 0:  # Brightening event
+                    frame[y, x] = min(255, frame[y, x] + 50)
+                else:  # Darkening event
+                    frame[y, x] = max(0, frame[y, x] - 50)
+
+        return frame
+
+    def extract_motion_features(self, events):
+        """Extract motion features from events"""
+        if not events:
+            return {'velocity': (0, 0), 'direction': 0, 'magnitude': 0}
+
+        # Calculate motion vectors from events
+        x_coords = [e[0] for e in events]
+        y_coords = [e[1] for e in events]
+        timestamps = [e[3] for e in events]
+
+        # Compute average motion
+        avg_dx = np.mean(np.diff(x_coords)) if len(x_coords) > 1 else 0
+        avg_dy = np.mean(np.diff(y_coords)) if len(y_coords) > 1 else 0
+
+        return {
+            'velocity': (avg_dx, avg_dy),
+            'direction': np.arctan2(avg_dy, avg_dx),
+            'magnitude': np.sqrt(avg_dx**2 + avg_dy**2)
+        }
+```
+
+#### Event-Based IMUs
+Similar to event cameras, event-based IMUs can provide asynchronous updates when changes exceed thresholds:
+
+- **Adaptive Sampling**: Only report when significant changes occur
+- **Reduced Power Consumption**: Lower average data rate
+- **Real-time Responsiveness**: Immediate response to significant changes
+
+### Quantum Sensors
+
+Quantum sensors leverage quantum mechanical properties for unprecedented sensitivity:
+
+#### Quantum Magnetometers
+- **Atomic Magnetometers**: Measure magnetic fields with femtotesla sensitivity
+- **SQUIDs**: Superconducting quantum interference devices for extremely sensitive measurements
+- **Applications**: Navigation, detection of ferromagnetic objects
+
+#### Quantum Accelerometers
+- **Atom Interferometry**: Using matter-wave interference for precise acceleration measurement
+- **Ultra-High Precision**: Orders of magnitude more sensitive than classical sensors
+- **Applications**: Precise navigation, gravity mapping
+
+### Bio-Inspired Sensors
+
+Nature provides inspiration for next-generation sensors:
+
+#### Artificial Hair Sensors
+- **Flow Detection**: Mimicking fish lateral lines for fluid flow detection
+- **Tactile Sensing**: Hair-like structures for detecting air/water movement
+- **Applications**: Environmental awareness, obstacle detection
+
+#### Insect Vision Systems
+- **Compound Eyes**: Wide field of view with motion detection capabilities
+- **Polarization Sensing**: Detecting polarized light for navigation
+- **Applications**: Fast motion detection, navigation
+
+## Sensor Data Processing Pipelines
+
+### Real-time Sensor Processing
+
+Modern humanoid robots require sophisticated real-time processing of multi-modal sensor data:
+
+```python
+import asyncio
+import numpy as np
+from collections import deque
+import threading
+
+class RealTimeSensorProcessor:
+    def __init__(self, buffer_size=100):
+        self.sensors = {}
+        self.data_buffers = {}
+        self.processing_pipelines = {}
+        self.buffer_size = buffer_size
+        self.is_running = False
+
+    def add_sensor(self, sensor_name, sensor_config):
+        """Add a sensor to the processing pipeline"""
+        self.sensors[sensor_name] = sensor_config
+        self.data_buffers[sensor_name] = deque(maxlen=self.buffer_size)
+
+        # Create processing pipeline based on sensor type
+        if sensor_config['type'] == 'camera':
+            self.processing_pipelines[sensor_name] = self.camera_pipeline
+        elif sensor_config['type'] == 'imu':
+            self.processing_pipelines[sensor_name] = self.imu_pipeline
+        elif sensor_config['type'] == 'lidar':
+            self.processing_pipelines[sensor_name] = self.lidar_pipeline
+
+    def camera_pipeline(self, data):
+        """Process camera data"""
+        # Apply preprocessing (undistortion, normalization)
+        processed = self.preprocess_camera_data(data)
+
+        # Run object detection
+        detections = self.run_object_detection(processed)
+
+        # Extract features
+        features = self.extract_visual_features(processed)
+
+        return {
+            'processed_image': processed,
+            'detections': detections,
+            'features': features
+        }
+
+    def imu_pipeline(self, data):
+        """Process IMU data"""
+        # Filter and integrate
+        filtered = self.filter_imu_data(data)
+
+        # Compute orientation
+        orientation = self.compute_orientation(filtered)
+
+        # Detect events (impacts, orientation changes)
+        events = self.detect_imu_events(filtered)
+
+        return {
+            'filtered_data': filtered,
+            'orientation': orientation,
+            'events': events
+        }
+
+    def lidar_pipeline(self, data):
+        """Process LIDAR data"""
+        # Convert to point cloud
+        point_cloud = self.lidar_to_pointcloud(data)
+
+        # Segment objects
+        objects = self.segment_lidar_objects(point_cloud)
+
+        # Compute distances and obstacles
+        obstacles = self.detect_obstacles(objects)
+
+        return {
+            'point_cloud': point_cloud,
+            'objects': objects,
+            'obstacles': obstacles
+        }
+
+    def process_all_sensors(self, sensor_data):
+        """Process data from all sensors simultaneously"""
+        results = {}
+
+        # Process each sensor in parallel
+        for sensor_name, data in sensor_data.items():
+            if sensor_name in self.processing_pipelines:
+                try:
+                    # Add to buffer
+                    self.data_buffers[sensor_name].append(data)
+
+                    # Process data
+                    result = self.processing_pipelines[sensor_name](data)
+                    results[sensor_name] = result
+                except Exception as e:
+                    print(f"Error processing {sensor_name}: {e}")
+                    results[sensor_name] = None
+
+        # Perform sensor fusion
+        fused_result = self.fuse_sensor_data(results)
+
+        return results, fused_result
+
+    def fuse_sensor_data(self, sensor_results):
+        """Fuse data from multiple sensors"""
+        # Example: Fuse camera and IMU for robust object tracking
+        if 'camera' in sensor_results and 'imu' in sensor_results:
+            camera_data = sensor_results['camera']
+            imu_data = sensor_results['imu']
+
+            # Compensate camera detections for robot motion using IMU
+            compensated_detections = self.compensate_detections(
+                camera_data['detections'],
+                imu_data['orientation']
+            )
+
+            return {
+                'compensated_detections': compensated_detections,
+                'robot_pose': imu_data['orientation']
+            }
+
+        return sensor_results
+```
+
+### Edge AI for Sensor Processing
+
+Deploying AI models directly on sensor hardware or robot computers:
+
+#### Neural Processing Units (NPUs)
+- **Dedicated Hardware**: Specialized chips for neural network inference
+- **Low Power**: Optimized for mobile/edge applications
+- **Real-time Performance**: Hardware-accelerated processing
+
+#### Model Optimization Techniques
+- **Quantization**: Reducing precision from FP32 to INT8
+- **Pruning**: Removing unnecessary connections
+- **Knowledge Distillation**: Creating smaller, faster student models
+- **TensorRT/TorchScript**: Runtime optimization frameworks
+
+## Sensor Fusion Techniques
+
+### Advanced Fusion Algorithms
+
+#### Extended Kalman Filter (EKF) for Multi-Sensor Fusion
+```python
+import numpy as np
+
+class MultiSensorEKF:
+    def __init__(self, state_dim, control_dim):
+        self.state_dim = state_dim
+        self.control_dim = control_dim
+
+        # State vector [x, y, z, vx, vy, vz, qw, qx, qy, qz]
+        self.x = np.zeros(state_dim)  # State vector
+        self.P = np.eye(state_dim)    # Covariance matrix
+
+        # Process noise
+        self.Q = np.eye(state_dim) * 0.1
+
+        # Measurement noise for different sensors
+        self.R_camera = np.eye(3) * 0.01    # Low noise for camera
+        self.R_imu = np.eye(6) * 0.1        # Medium noise for IMU
+        self.R_lidar = np.eye(3) * 0.05     # Medium noise for LIDAR
+
+    def predict(self, u, dt):
+        """Predict step using motion model"""
+        # State transition model (simplified)
+        F = self.compute_jacobian_F(dt)
+
+        # Predict state
+        self.x = self.motion_model(self.x, u, dt)
+
+        # Predict covariance
+        self.P = F @ self.P @ F.T + self.Q
+
+    def update_camera(self, z_camera):
+        """Update with camera measurement [x, y, z]"""
+        # Measurement model
+        H = np.zeros((3, self.state_dim))
+        H[0, 0] = 1  # x position
+        H[1, 1] = 1  # y position
+        H[2, 2] = 1  # z position
+
+        # Innovation
+        y = z_camera - H @ self.x
+        S = H @ self.P @ H.T + self.R_camera
+
+        # Kalman gain
+        K = self.P @ H.T @ np.linalg.inv(S)
+
+        # Update state and covariance
+        self.x = self.x + K @ y
+        self.P = (np.eye(self.state_dim) - K @ H) @ self.P
+
+    def update_imu(self, z_imu):
+        """Update with IMU measurement [ax, ay, az, wx, wy, wz]"""
+        # Implementation would depend on specific IMU model
+        pass
+
+    def motion_model(self, x, u, dt):
+        """Simplified motion model"""
+        # Implement physics-based motion prediction
+        new_x = x.copy()
+
+        # Update position based on velocity
+        new_x[0:3] += new_x[3:6] * dt  # position += velocity * dt
+
+        # Update velocity based on acceleration (from control input)
+        new_x[3:6] += u[0:3] * dt      # velocity += acceleration * dt
+
+        return new_x
+
+    def compute_jacobian_F(self, dt):
+        """Compute Jacobian of motion model"""
+        F = np.eye(self.state_dim)
+
+        # Position-velocity relationship
+        F[0:3, 3:6] = np.eye(3) * dt
+
+        return F
+```
+
+#### Particle Filter for Non-linear Systems
+```python
+class ParticleFilter:
+    def __init__(self, num_particles=1000, state_dim=6):
+        self.num_particles = num_particles
+        self.state_dim = state_dim
+
+        # Initialize particles
+        self.particles = np.random.normal(0, 1, (num_particles, state_dim))
+        self.weights = np.ones(num_particles) / num_particles
+
+    def predict(self, control, noise_std):
+        """Predict particle states"""
+        for i in range(self.num_particles):
+            # Apply motion model with noise
+            self.particles[i] += self.motion_model(control) + \
+                               np.random.normal(0, noise_std, self.state_dim)
+
+        # Normalize weights
+        self.weights = self.weights / np.sum(self.weights)
+
+    def update(self, measurement, measurement_std):
+        """Update particle weights based on measurement"""
+        for i in range(self.num_particles):
+            # Calculate likelihood of measurement given particle state
+            predicted_measurement = self.measurement_model(self.particles[i])
+            likelihood = self.gaussian_likelihood(
+                measurement, predicted_measurement, measurement_std
+            )
+
+            # Update weight
+            self.weights[i] *= likelihood
+
+        # Normalize weights
+        self.weights = self.weights / np.sum(self.weights)
+
+    def resample(self):
+        """Resample particles based on weights"""
+        # Systematic resampling
+        indices = self.systematic_resample()
+        self.particles = self.particles[indices]
+        self.weights = np.ones(self.num_particles) / self.num_particles
+
+    def estimate(self):
+        """Get state estimate from particles"""
+        return np.average(self.particles, weights=self.weights, axis=0)
+
+    def systematic_resample(self):
+        """Systematic resampling algorithm"""
+        cumulative_sum = np.cumsum(self.weights)
+        start = np.random.uniform(0, 1/self.num_particles)
+        indices = []
+        i, j = 0, 0
+        while i < self.num_particles:
+            if start + i / self.num_particles < cumulative_sum[j]:
+                indices.append(j)
+                i += 1
+            else:
+                j += 1
+        return indices
+```
+
+## Sensor Reliability and Fault Tolerance
+
+### Sensor Health Monitoring
+
+```python
+class SensorHealthMonitor:
+    def __init__(self):
+        self.sensor_stats = {}
+        self.health_thresholds = {
+            'data_rate': 0.8,      # Minimum percentage of expected data rate
+            'accuracy': 0.95,      # Minimum accuracy threshold
+            'latency': 0.1,        # Maximum acceptable latency (seconds)
+            'consistency': 0.9     # Minimum consistency with other sensors
+        }
+
+    def monitor_sensor(self, sensor_name, data, timestamp):
+        """Monitor sensor health and performance"""
+        if sensor_name not in self.sensor_stats:
+            self.initialize_sensor_stats(sensor_name)
+
+        stats = self.sensor_stats[sensor_name]
+
+        # Update data rate
+        current_time = time.time()
+        stats['data_rate'] = self.update_data_rate(stats, current_time)
+
+        # Check for anomalies
+        is_anomalous = self.detect_anomalies(sensor_name, data, stats)
+
+        # Check consistency with other sensors
+        consistency_score = self.check_consistency(sensor_name, data)
+
+        # Update health score
+        health_score = self.calculate_health_score(
+            stats['data_rate'],
+            consistency_score,
+            is_anomalous
+        )
+
+        # Update sensor status
+        self.update_sensor_status(sensor_name, health_score)
+
+        return {
+            'health_score': health_score,
+            'status': self.get_sensor_status(sensor_name),
+            'recommendation': self.get_recommendation(sensor_name, health_score)
+        }
+
+    def detect_anomalies(self, sensor_name, data, stats):
+        """Detect anomalies in sensor data"""
+        # Check for sudden jumps, repeated values, or out-of-range values
+        if 'last_value' in stats:
+            change = abs(data - stats['last_value'])
+            if change > stats.get('max_change_threshold', 100):
+                return True  # Anomaly detected
+
+        stats['last_value'] = data
+        return False
+
+    def calculate_health_score(self, data_rate, consistency, anomalous):
+        """Calculate overall health score"""
+        score = 0.4 * data_rate + 0.4 * consistency - 0.2 * anomalous
+        return max(0, min(1, score))  # Clamp between 0 and 1
+```
+
+## Future Sensor Technologies
+
+### Emerging Sensor Technologies
+
+#### Neuromorphic Sensors
+- **Spiking Cameras**: Event-based vision sensors that mimic biological vision
+- **Asynchronous Operation**: Ultra-low power consumption
+- **Real-time Processing**: On-sensor processing capabilities
+
+#### Terahertz Sensors
+- **Material Identification**: Distinguish between different materials
+- **Non-destructive Testing**: See through clothing, packaging
+- **Security Applications**: Detection of concealed objects
+
+#### Hyperspectral Imaging
+- **Material Analysis**: Identify materials based on spectral signatures
+- **Quality Assessment**: Food quality, material composition
+- **Environmental Monitoring**: Gas detection, vegetation health
+
+### Software-Defined Sensors
+
+Software-defined sensors use computational methods to create virtual sensors from multiple physical sensors:
+
+- **Virtual Sensors**: Combine multiple physical sensors to create new measurement capabilities
+- **Sensor Simulation**: Use AI to predict sensor readings when physical sensors fail
+- **Multi-modal Inference**: Infer missing sensor data from other modalities
+
+## Best Practices for Sensor Integration
+
+### Design Principles
+
+- **Redundancy**: Multiple sensors for critical functions
+- **Modularity**: Pluggable sensor modules for easy replacement/upgrade
+- **Scalability**: Support for adding new sensors without major reconfiguration
+- **Standardization**: Common interfaces and protocols across sensors
+- **Power Efficiency**: Optimize sensor usage based on task requirements
+- **Privacy Protection**: Secure and anonymize sensor data
+
+### Implementation Guidelines
+
+- **Calibration First**: Establish reliable calibration procedures
+- **Validation**: Continuously validate sensor performance
+- **Monitoring**: Implement comprehensive sensor health monitoring
+- **Fallback Systems**: Ensure safe operation when sensors fail
+- **Data Management**: Efficient storage and processing of sensor data
+- **Security**: Protect sensor data and prevent spoofing
+
+Sensor systems in humanoid robotics represent a critical component that enables these robots to perceive, understand, and interact with their environment. The successful integration of diverse sensor technologies, combined with sophisticated processing algorithms, enables humanoid robots to operate safely and effectively in human environments. As sensor technology continues to advance, humanoid robots will become increasingly capable of understanding and responding to the complex, dynamic environments they share with humans.

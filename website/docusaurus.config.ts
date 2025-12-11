@@ -22,7 +22,7 @@ const config: Config = {
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
-  organizationName: 'Huzaifa-Rehan', // Usually your GitHub org/user name.
+  organizationName: 'HuzaifaRehanMalik', // Usually your GitHub org/user name.
   projectName: 'Book-Humanoid-Robotics', // Usually your repo name.
 
   onBrokenLinks: 'warn',
@@ -106,7 +106,7 @@ const config: Config = {
           position: 'right',
         },
         {
-          href: 'https://github.com/Huzaifa-Rehan/Book-Humanoid-Robotics',
+          href: 'https://github.com/HuzaifaRehanMalik/Book-Humanoid-Robotics',
           label: 'GitHub',
           position: 'right',
         },
@@ -146,7 +146,7 @@ const config: Config = {
           items: [
             {
               label: 'GitHub Repository',
-              href: 'https://github.com/Huzaifa-Rehan/Book-Humanoid-Robotics',
+              href: 'https://github.com/HuzaifaRehanMalik/Book-Humanoid-Robotics',
             },
             {
               label: 'Docusaurus',
