@@ -102,7 +102,13 @@
       "Bash(dir \"D:\\Governer_IT_course\\Q4\\Hackathon\\Physical AI & Humanoid Robotics Course\\Book-Humanoid-Robotics\\specs\\007-remove-docusaurus-tutorials\\checklists\")",
       "Bash(dir \"website\\docs\" /s)",
       "Bash(dir:*)",
-      "Bash(npm install @docusaurus/core @docusaurus/preset-classic)"
+      "Bash(npm install @docusaurus/core @docusaurus/preset-classic)",
+      "Bash(Remove-Item -Recurse -Force \"D:\\Governer_IT_course\\Q4\\Hackathon\\Physical AI & Humanoid Robotics Course\\Book-Humanoid-Robotics\\website\\blog\")",
+      "Bash(powershell.exe -Command \"Remove-Item -Recurse -Force ''D:\\Governer_IT_course\\Q4\\Hackathon\\Physical AI & Humanoid Robotics Course\\Book-Humanoid-Robotics\\website\\blog''\")",
+      "Bash(npx docusaurus build --cwd \"D:\\Governer_IT_course\\Q4\\Hackathon\\Physical AI & Humanoid Robotics Course\\Book-Humanoid-Robotics\\website\")",
+      "Bash(powershell.exe -Command \"Remove-Item ''D:\\Governer_IT_course\\Q4\\Hackathon\\Physical AI & Humanoid Robotics Course\\Book-Humanoid-Robotics\\website\\src\\pages\\index.tsx'' -Force\")",
+      "Bash(npm install @docusaurus/core@3.9.2 @docusaurus/preset-classic@3.9.2)",
+      "Bash(node website/node_modules/@docusaurus/core/bin/docusaurus.mjs build)"
     ],
     "deny": [],
     "ask": []
