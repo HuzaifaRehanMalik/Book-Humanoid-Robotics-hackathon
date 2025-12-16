@@ -108,7 +108,11 @@
       "Bash(npx docusaurus build --cwd \"D:\\Governer_IT_course\\Q4\\Hackathon\\Physical AI & Humanoid Robotics Course\\Book-Humanoid-Robotics\\website\")",
       "Bash(powershell.exe -Command \"Remove-Item ''D:\\Governer_IT_course\\Q4\\Hackathon\\Physical AI & Humanoid Robotics Course\\Book-Humanoid-Robotics\\website\\src\\pages\\index.tsx'' -Force\")",
       "Bash(npm install @docusaurus/core@3.9.2 @docusaurus/preset-classic@3.9.2)",
-      "Bash(node website/node_modules/@docusaurus/core/bin/docusaurus.mjs build)"
+      "Bash(node website/node_modules/@docusaurus/core/bin/docusaurus.mjs build)",
+      "Bash(powershell.exe -Command \"Get-ChildItem -Path website -Recurse -Directory\":*)",
+      "Bash(powershell.exe -Command \"Get-ChildItem -Path website\\src\\pages -File\")",
+      "WebFetch(domain:ai-native.panaversity.org)",
+      "Bash(powershell.exe -Command \"Get-ChildItem -Path website\\node_modules\\@docusaurus\")"
     ],
     "deny": [],
     "ask": []
