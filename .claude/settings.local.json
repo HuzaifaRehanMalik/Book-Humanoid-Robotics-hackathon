@@ -112,7 +112,13 @@
       "Bash(powershell.exe -Command \"Get-ChildItem -Path website -Recurse -Directory\":*)",
       "Bash(powershell.exe -Command \"Get-ChildItem -Path website\\src\\pages -File\")",
       "WebFetch(domain:ai-native.panaversity.org)",
-      "Bash(powershell.exe -Command \"Get-ChildItem -Path website\\node_modules\\@docusaurus\")"
+      "Bash(powershell.exe -Command \"Get-ChildItem -Path website\\node_modules\\@docusaurus\")",
+      "Bash(powershell Get-ChildItem -Path website -Recurse -Directory)",
+      "Bash(powershell Get-ChildItem -Path \"website\\src\\pages\" -File)",
+      "Bash(npm run start -- --port 3000)",
+      "Bash(git add website/src/pages/index.tsx website/src/pages/index.module.css website/docusaurus.config.ts history/prompts/general/001-create-title-page.general.prompt.md)",
+      "Bash(git commit -m \"feat: create new title page for Introduction to Physical AI & Humanoid Robotics\n\n- Updated homepage with new title and layout\n- Added enhanced styling for the title page\n- Updated site configuration title\n- Created PHR for the changes\")",
+      "Bash(git push origin 007-remove-docusaurus-tutorials)"
     ],
     "deny": [],
     "ask": []
