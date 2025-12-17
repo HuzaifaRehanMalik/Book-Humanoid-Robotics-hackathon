@@ -167,7 +167,7 @@ const config: Config = {
             },
             {
               label: 'Textbook Overview',
-              to: '/docs/tutorial-basics/create-a-document',
+              to: '/introduction',
             },
           ],
         },

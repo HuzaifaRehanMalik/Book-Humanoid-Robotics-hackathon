@@ -56,49 +56,49 @@ function ModulesSection() {
     {
       title: 'ROS 2 Foundations',
       description: 'Learn the fundamentals of Robot Operating System 2, the standard framework for robotics development.',
-      to: '/docs/ros2-fundamentals',
+      to: '/ros2-fundamentals',
       icon: '🤖'
     },
     {
       title: 'Gazebo & Unity Simulation',
       description: 'Master simulation environments for testing and developing humanoid robotics applications.',
-      to: '/docs/gazebo-unity-simulation',
+      to: '/gazebo-unity-simulation',
       icon: '🎮'
     },
     {
       title: 'Nvidia Isaac & Omniverse',
       description: 'Explore advanced simulation and development tools for AI-powered robotics systems.',
-      to: '/docs/nvidia-isaac',
+      to: '/nvidia-isaac',
       icon: '🌐'
     },
     {
       title: 'VLA & Conversational Robotics',
       description: 'Understand Vision-Language-Action models and how they enable human-robot interaction.',
-      to: '/docs/vla-models',
+      to: '/vla-models',
       icon: '💬'
     },
     {
       title: 'Sensors, Motors & Kinematics',
       description: 'Study the physical components and mathematical models that enable robot movement.',
-      to: '/docs/sensor-systems',
+      to: '/sensor-systems',
       icon: '⚙️'
     },
     {
       title: 'Motion Planning & Control',
       description: 'Learn algorithms for robot navigation, path planning, and precise movement control.',
-      to: '/docs/control-systems',
+      to: '/control-systems',
       icon: '🎯'
     },
     {
       title: 'Reinforcement Learning for Humanoids',
       description: 'Discover how AI agents learn complex behaviors through interaction with the environment.',
-      to: '/docs/learning-algorithms',
+      to: '/learning-algorithms',
       icon: '🧠'
     },
     {
       title: 'Capstone Project',
       description: 'Apply your knowledge in a comprehensive project integrating all concepts learned.',
-      to: '/docs/conclusion',
+      to: '/conclusion',
       icon: '🎓'
     }
   ];
@@ -142,7 +142,7 @@ function CTASection() {
           </Link>
           <Link
             className="button button--secondary button--lg"
-            to="/docs/humanoid-robotics-basics">
+            to="/humanoid-robotics-basics">
             Explore Content
           </Link>
         </div>
