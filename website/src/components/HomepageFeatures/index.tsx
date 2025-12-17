@@ -1,4 +1,3 @@
-// HomePage 
 import type {ReactNode} from 'react';
 import clsx from 'clsx';
 import Heading from '@theme/Heading';

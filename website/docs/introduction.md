@@ -60,13 +60,13 @@ The pursuit of humanoid robotics is driven by several compelling reasons:
 - **General-Purpose Capability**: Humanoid robots have the potential to perform a wide variety of tasks that humans do
 - **Scientific Understanding**: Developing humanoid robots advances our understanding of human movement, cognition, and interaction
 
-<div class="textbook-figure">
+<!-- <div class="textbook-figure">
 
-![Humanoid Robot Architecture](/img/undraw_docusaurus_tree.svg)
+![Humanoid Robot Architecture](/img/humanoid-architecture.png)
 
 **Figure 1.** Basic architecture of a humanoid robot showing the integration of perception, planning, control, and interaction systems. The humanoid form factor enables operation in human environments while the integrated AI systems provide intelligent behavior.
 
-</div>
+</div> -->
 
 ### Applications of Humanoid Robotics
 

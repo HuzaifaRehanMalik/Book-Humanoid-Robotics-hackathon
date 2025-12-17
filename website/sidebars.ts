@@ -27,7 +27,6 @@ const sidebars: SidebarsConfig = {
           type: 'category',
           label: 'Foundations',
           items: [
-            'foundations-overview',
             'physical-ai-foundations',
             'humanoid-robotics-basics',
             'kinematics-dynamics',
@@ -57,6 +56,15 @@ const sidebars: SidebarsConfig = {
           ],
         },
         'conclusion',
+      ],
+    },
+    {
+      type: 'category',
+      label: 'Account',
+      items: [
+        'settings',
+        'login',
+        'signup',
       ],
     },
   ],

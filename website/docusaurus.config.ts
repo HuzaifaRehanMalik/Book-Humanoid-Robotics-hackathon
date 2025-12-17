@@ -52,7 +52,21 @@ const config: Config = {
           editCurrentVersion: true,
           // Enable next and previous navigation in the sidebar
         },
-        blog: false,
+        blog: {
+          showReadingTime: true,
+          feedOptions: {
+            type: ['rss', 'atom'],
+            xslt: true,
+          },
+          // Please change this to your repo.
+          // Remove this to remove the "edit this page" links.
+          editUrl:
+            'https://github.com/Huzaifa-Rehan/Book-Humanoid-Robotics/tree/main/website/',
+          // Useful options to enforce blogging best practices
+          onInlineTags: 'warn',
+          onInlineAuthors: 'warn',
+          onUntruncatedBlogPosts: 'warn',
+        },
         theme: {
           customCss: './src/css/custom.css',
         },
@@ -80,10 +94,16 @@ const config: Config = {
       },
       items: [
         {
-          type: 'doc',
-          docId: 'introduction',
+          type: 'docSidebar',
+          sidebarId: 'tutorialSidebar',
           position: 'left',
           label: 'Textbook',
+        },
+        {to: '/blog', label: 'Blog', position: 'left'},
+        {
+          to: '/settings',
+          label: 'Settings',
+          position: 'right',
         },
         {
           href: 'https://github.com/HuzaifaRehanMalik/Book-Humanoid-Robotics',
@@ -129,6 +149,10 @@ const config: Config = {
               href: 'https://github.com/HuzaifaRehanMalik/Book-Humanoid-Robotics',
             },
             {
+              label: 'Docusaurus',
+              href: 'https://docusaurus.io',
+            },
+            {
               label: 'Panaverse',
               href: 'https://panaversity.org',
             },
@@ -138,8 +162,12 @@ const config: Config = {
           title: 'More',
           items: [
             {
+              label: 'Blog',
+              to: '/blog',
+            },
+            {
               label: 'Textbook Overview',
-              to: '/introduction',
+              to: '/docs/tutorial-basics/create-a-document',
             },
           ],
         },
