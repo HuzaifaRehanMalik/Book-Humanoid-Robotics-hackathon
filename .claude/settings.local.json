@@ -99,7 +99,15 @@
       "Bash(dir website/package.json)",
       "Bash(npm install @docusaurus/core@3.9.2)",
       "Bash(npm install --legacy-peer-deps)",
-      "Bash(npx docusaurus build -- --legacy-peer-deps)"
+      "Bash(npx docusaurus build -- --legacy-peer-deps)",
+      "Bash(cat .gitignore)",
+      "Skill(sp.phr)",
+      "Bash(npm run dev)",
+      "Bash(npx docusaurus start)",
+      "Bash(npm install @docusaurus/core @docusaurus/preset-classic)",
+      "Bash(npx docusaurus start --port 3000)",
+      "Bash(git add .)",
+      "Bash(git commit -m \"Fix introduction page accessibility and update gitignore\n\n- Remove slug: / from introduction.md to make it accessible at /introduction\n- Remove .env* from gitignore to allow .env files to be tracked\n- Add PHR record for the changes\")"
     ],
     "deny": [],
     "ask": []

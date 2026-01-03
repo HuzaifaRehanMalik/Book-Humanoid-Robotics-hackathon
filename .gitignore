@@ -65,7 +65,6 @@ build/
 *.bundle.js
 
 # Environment variables
-.env*
 !.env.example
 
 # IDE

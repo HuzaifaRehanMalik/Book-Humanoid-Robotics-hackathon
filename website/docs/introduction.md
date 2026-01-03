@@ -1,7 +1,6 @@
 ---
 id: introduction
 title: Introduction to Physical AI & Humanoid Robotics
-slug: /
 ---
 
 # Introduction to Physical AI & Humanoid Robotics
