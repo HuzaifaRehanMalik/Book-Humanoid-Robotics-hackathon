@@ -1,225 +1,47 @@
-import logging
-from typing import List, Dict, Any
-import google.generativeai as genai
 import os
-import time
-from dotenv import load_dotenv
-from ..database.vector_db import search_relevant_content
-from ..models.user_preferences import UserPreferences
+from openai import OpenAI
+from src.database.qdrant import client, COLLECTION_NAME
 
-# Load environment variables
-load_dotenv()
+# Hugging Face will provide this automatically from Settings → Variables
+openai_client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-logger = logging.getLogger(__name__)
 
-# Configure Google Generative AI
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+def get_embedding(text: str):
+    response = openai_client.embeddings.create(
+        model="text-embedding-3-small",
+        input=text
+    )
+    return response.data[0].embedding
 
-class RAGService:
-    """
-    Service class for handling RAG (Retrieval-Augmented Generation) operations.
-    """
 
-    def __init__(self):
-        self.model_name = os.getenv("GEMINI_MODEL_NAME", "gemini-pro")
-        self.max_output_tokens = int(os.getenv("GEMINI_MAX_OUTPUT_TOKENS", "1000"))
-        self.temperature = float(os.getenv("GEMINI_TEMPERATURE", "0.7"))
-        self.top_p = float(os.getenv("GEMINI_TOP_P", "0.9"))
-        self.top_k = int(os.getenv("GEMINI_TOP_K", "40"))
+def search_similar_chunks(query: str, limit: int = 3):
+    query_vector = get_embedding(query)
 
-    async def generate_response(self, query: str, user_preferences: UserPreferences = None, context: str = None) -> Dict[str, Any]:
-        """
-        Generate a response to the user query using RAG approach.
+    search_result = client.search(
+        collection_name=COLLECTION_NAME,
+        query_vector=query_vector,
+        limit=limit
+    )
 
-        Args:
-            query: The user's query
-            user_preferences: User preferences for personalization
-            context: Optional specific context to use instead of searching
+    return [hit.payload["text"] for hit in search_result]
 
-        Returns:
-            Dictionary containing the response and metadata
-        """
-        try:
-            # Get relevant context if not provided
-            if not context:
-                # Search for relevant content in the vector database
-                relevant_docs = await search_relevant_content(query, limit=5)
 
-                # Combine the content from relevant documents
-                context_parts = []
-                sources = []
+def generate_answer(question: str):
+    context_chunks = search_similar_chunks(question)
+    context = "\n".join(context_chunks)
 
-                for doc in relevant_docs:
-                    context_parts.append(doc["content"])
-                    sources.append({
-                        "title": doc["title"],
-                        "chapter": doc["chapter"],
-                        "section": doc["section"],
-                        "url": doc["url"],
-                        "relevance_score": doc["score"]
-                    })
-
-                context = "\n\n".join(context_parts)
-            else:
-                sources = []  # No sources when context is provided directly
-
-            # Prepare the prompt for the LLM
-            system_prompt = self._get_system_prompt(user_preferences)
-            user_prompt = self._get_user_prompt(query, context)
-
-            # Combine system and user prompts for Gemini
-            full_prompt = f"{system_prompt}\n\n{user_prompt}"
-
-            # Initialize the model
-            model = genai.GenerativeModel(self.model_name)
-
-            # Configure generation parameters
-            generation_config = genai.types.GenerationConfig(
-                max_output_tokens=self.max_output_tokens,
-                temperature=self.temperature,
-                top_p=self.top_p,
-                top_k=self.top_k
-            )
-
-            # Call the Gemini API
-            response = await model.generate_content_async(
-                full_prompt,
-                generation_config=generation_config
-            )
-
-            # Extract the response
-            generated_text = response.text.strip()
-
-            # Return the response with metadata
-            result = {
-                "query": query,
-                "response": generated_text,
-                "sources": sources,
-                "model": self.model_name,
-                "timestamp": int(time.time())
+    response = openai_client.chat.completions.create(
+        model="gpt-4.1-mini",
+        messages=[
+            {
+                "role": "system",
+                "content": "Answer the question using only the provided context."
+            },
+            {
+                "role": "user",
+                "content": f"Context:\n{context}\n\nQuestion:\n{question}"
             }
+        ]
+    )
 
-            logger.info(f"Generated response for query: {query[:50]}...")
-            return result
-
-        except Exception as e:
-            logger.error(f"Error generating response: {e}")
-            raise
-
-    def _get_system_prompt(self, user_preferences: UserPreferences = None) -> str:
-        """
-        Get the system prompt for the LLM based on user preferences.
-
-        Args:
-            user_preferences: User preferences for personalization
-
-        Returns:
-            System prompt string
-        """
-        base_prompt = (
-            "You are an AI assistant for the Physical AI & Humanoid Robotics Textbook. "
-            "Your purpose is to answer questions based on the textbook content provided in the context. "
-            "Always cite the specific chapters, sections, or pages when possible. "
-            "If the answer is not available in the provided context, clearly state that the information is not in the textbook. "
-            "Provide accurate, helpful, and concise answers."
-        )
-
-        # Add personalization based on user preferences
-        if user_preferences:
-            if user_preferences.adaptive_difficulty == "beginner":
-                base_prompt += " Explain concepts in simple terms suitable for beginners. "
-            elif user_preferences.adaptive_difficulty == "advanced":
-                base_prompt += " Provide detailed explanations with advanced terminology. "
-
-            if user_preferences.adaptive_code_samples:
-                base_prompt += " Include relevant code examples when applicable. "
-
-        return base_prompt
-
-    def _get_user_prompt(self, query: str, context: str) -> str:
-        """
-        Get the user prompt for the LLM.
-
-        Args:
-            query: The user's query
-            context: The retrieved context
-
-        Returns:
-            User prompt string
-        """
-        return (
-            f"Context:\n{context}\n\n"
-            f"Question: {query}\n\n"
-            f"Please provide a comprehensive answer based on the context provided, "
-            f"and cite specific chapters or sections when possible."
-        )
-
-    async def process_selected_text_query(self, query: str, selected_text: str) -> Dict[str, Any]:
-        """
-        Process a query that should be answered based only on the selected text.
-
-        Args:
-            query: The user's query
-            selected_text: The text that was selected by the user
-
-        Returns:
-            Dictionary containing the response and metadata
-        """
-        try:
-            # Prepare the prompt for the LLM with only the selected text as context
-            system_prompt = (
-                "You are an AI assistant for the Physical AI & Humanoid Robotics Textbook. "
-                "Your purpose is to answer questions based ONLY on the selected text provided in the context. "
-                "Do not use any external knowledge. If the answer cannot be derived from the selected text, "
-                "clearly state that the information is not available in the selected text. "
-                "Provide accurate, helpful, and concise answers."
-            )
-
-            user_prompt = (
-                f"Selected Text:\n{selected_text}\n\n"
-                f"Question: {query}\n\n"
-                f"Please provide an answer based ONLY on the selected text provided, "
-                f"and do not use any external knowledge."
-            )
-
-            # Combine system and user prompts for Gemini
-            full_prompt = f"{system_prompt}\n\n{user_prompt}"
-
-            # Initialize the model
-            model = genai.GenerativeModel(self.model_name)
-
-            # Configure generation parameters
-            generation_config = genai.types.GenerationConfig(
-                max_output_tokens=self.max_output_tokens,
-                temperature=self.temperature,
-                top_p=self.top_p,
-                top_k=self.top_k
-            )
-
-            # Call the Gemini API
-            response = await model.generate_content_async(
-                full_prompt,
-                generation_config=generation_config
-            )
-
-            # Extract the response
-            generated_text = response.text.strip()
-
-            # Return the response with metadata
-            result = {
-                "query": query,
-                "response": generated_text,
-                "sources": [{"type": "selected_text", "content": selected_text[:200] + "..." if len(selected_text) > 200 else selected_text}],
-                "model": self.model_name,
-                "timestamp": int(time.time())
-            }
-
-            logger.info(f"Generated selected text response for query: {query[:50]}...")
-            return result
-
-        except Exception as e:
-            logger.error(f"Error processing selected text query: {e}")
-            raise
-
-# Global instance
-rag_service = RAGService()
+    return response.choices[0].message.content
