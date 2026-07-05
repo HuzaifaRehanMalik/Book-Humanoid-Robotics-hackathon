@@ -66,6 +66,8 @@ build/
 
 # Environment variables
 !.env.example
+.env
+.env.*
 
 # IDE
 .vscode/
