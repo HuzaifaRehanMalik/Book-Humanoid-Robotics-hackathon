@@ -121,15 +121,6 @@ coverage.xml
 *.cover
 *.log
 
-# FastAPI/Python backend (for future API directory)
-api/venv/
-api/env/
-api/*.pyc
-api/__pycache__/
-api/*.log
-api/.env*
-api/.venv/
-
 # Database
 *.db
 *.db-journal

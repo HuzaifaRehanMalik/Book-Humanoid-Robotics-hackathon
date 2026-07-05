@@ -1,7 +1,0 @@
-fastapi
-uvicorn[standard]
-openai>=1.0.0
-qdrant-client
-pydantic
-numpy
-python-multipart

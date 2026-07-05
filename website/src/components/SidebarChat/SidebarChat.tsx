@@ -60,9 +60,9 @@ const SidebarChat: React.FC<SidebarChatProps> = ({ isOpen, onClose }) => {
 
       // Determine API base URL based on environment variable
       const apiBaseUrl = process.env.REACT_APP_API_BASE_URL ||
-        (process.env.NODE_ENV === 'production'
-          ? window.location.origin.replace(window.location.port, '8000')
-          : 'http://localhost:8000');
+        (typeof window !== 'undefined'
+          ? window.location.origin
+          : '');
 
       // Call the RAG API
       const response = await fetch(`${apiBaseUrl}/api/v1/chat`, {
@@ -85,7 +85,7 @@ const SidebarChat: React.FC<SidebarChatProps> = ({ isOpen, onClose }) => {
       // Add assistant message with the API response
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
-        content: data.response,
+        content: data.response ?? data.answer ?? 'Sorry, there was no answer returned.',
         role: 'assistant',
         timestamp: new Date(),
       };

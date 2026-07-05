@@ -1,4 +1,4 @@
-{
+﻿{
   "version": 2,
   "builds": [
     {
@@ -9,6 +9,17 @@
         "buildCommand": "npm run build --workspace=website",
         "outputDirectory": "website/build"
       }
+    }
+  ],
+  "functions": {
+    "website/api/**/*.ts": {
+      "runtime": "nodejs20.x"
+    }
+  },
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/website/api/$1.ts"
     }
   ],
   "installCommand": "npm install"

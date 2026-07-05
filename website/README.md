@@ -4,21 +4,19 @@ This website is built using [Docusaurus](https://docusaurus.io/), a modern stati
 
 ## Environment Configuration
 
-To connect to the backend API, you need to set the following environment variable:
+The website includes built-in API routes under `/api/v1` for the chatbot.
 
 1. Copy the `.env.example` file to `.env`:
    ```bash
    cp .env.example .env
    ```
 
-2. Update the `REACT_APP_API_BASE_URL` variable in your `.env` file to point to your deployed backend API:
-   ```
-   REACT_APP_API_BASE_URL=https://your-deployed-api.onrender.com
+2. Set your OpenAI API key in `website/.env`:
+   ```bash
+   OPENAI_API_KEY=sk-...
    ```
 
-If not set, the application will default to `http://localhost:8000` for API requests.
-
-When deploying the frontend, make sure to set this variable to your deployed backend API URL.
+If you want to override the API base URL for a custom deployment, you can set `REACT_APP_API_BASE_URL`, but this is optional.
 
 ## Installation
 

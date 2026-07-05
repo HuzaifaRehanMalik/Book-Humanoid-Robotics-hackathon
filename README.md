@@ -45,48 +45,26 @@ This project uses:
 2. Install dependencies: `npm install`
 3. Start the development server: `npm run start`
 
-### Backend (API)
-1. Navigate to the `api` directory
-2. Install dependencies: `pip install -r requirements.txt`
-3. Set up environment variables (see `.env.example` in the api directory)
-4. Load textbook content: `python load_textbook_content.py`
-5. Start the API server: `python -m uvicorn src.main:app --host 0.0.0.0 --port 8000`
+### Chat API
+The chatbot API is implemented inside `website/api/v1` as TypeScript serverless functions.
+
+- No separate backend server is required.
+- In local development, run the website and the API together through Docusaurus/Vercel tooling.
+- Set `OPENAI_API_KEY` in `website/.env` or in your Vercel environment.
+- The frontend calls `/api/v1/chat` and `/api/v1/chat-selected-text` directly.
 
 ### Environment Configuration
-- For the frontend to connect to the backend API, set the `REACT_APP_API_BASE_URL` environment variable in the website directory
-- The backend requires OpenAI API key and other environment variables as specified in the api directory
+- Set `OPENAI_API_KEY` in `website/.env` or in Vercel environment variables.
+- If using a custom API base URL, set `REACT_APP_API_BASE_URL` in the website environment.
 
 ## Deployment
 
-### Backend API Deployment
-The backend API can be deployed to various cloud platforms. The project includes a Dockerfile for containerized deployment.
+### Website Deployment
+This project deploys the Docusaurus website and chatbot API together on Vercel.
 
-#### Free Hosting Options
-The API can be deployed for free on several platforms:
-
-**Railway (Recommended for free tier)**
-1. Sign up at Railway.app
-2. Connect your GitHub repository
-3. Create a new project and select this repository
-4. Set the required environment variables (OPENAI_API_KEY, etc.)
-5. Deploy the project
-
-**Render (Free Tier)**
-1. Sign up at Render.com
-2. Create a new Web Service
-3. Connect to your GitHub repository
-4. Use the following settings:
-   - Build Command: `pip install -r requirements.txt`
-   - Start Command: `python load_textbook_content.py && python -m uvicorn src.main:app --host 0.0.0.0 --port $PORT`
-5. Set the required environment variables
-
-**Heroku (Free Tier)**
-1. Sign up at Heroku.com
-2. Install the Heroku CLI
-3. Create a new app
-4. Add the Heroku Python buildpack
-5. Set the required environment variables
-6. Deploy using Git
+- The website and API functions live under `website/`.
+- Vercel routes `/api/*` to the TypeScript handlers in `website/api/`.
+- No separate Python backend deployment is required.
 
 ### Frontend Deployment
 The Docusaurus frontend can be deployed to platforms like Vercel, Netlify, or GitHub Pages following standard Docusaurus deployment practices.

@@ -1,7 +1,16 @@
 import React, { useState } from "react";
 import styles from "./ChatbotWidget.module.css";
 
-const API_URL = process.env.REACT_APP_API_URL;
+function getApiUrl() {
+  if (typeof window === 'undefined') {
+    return process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000';
+  }
+
+  return (
+    process.env.REACT_APP_API_BASE_URL ||
+    window.location.origin
+  );
+}
 
 export default function ChatbotWidget() {
   const [messages, setMessages] = useState<
@@ -19,12 +28,12 @@ export default function ChatbotWidget() {
     setLoading(true);
 
     try {
-      const response = await fetch(`${API_URL}/chat`, {
+      const response = await fetch(`${getApiUrl()}/api/v1/chat`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ question: input }),
+        body: JSON.stringify({ query: input }),
       });
 
       if (!response.ok) {
@@ -35,7 +44,7 @@ export default function ChatbotWidget() {
 
       const assistantMessage = {
         role: "assistant" as const,
-        content: data.answer,
+        content: data.response ?? data.answer ?? 'Sorry, no answer was returned.',
       };
 
       setMessages((prev) => [...prev, assistantMessage]);
