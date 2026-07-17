@@ -1,26 +1,18 @@
-﻿{
-  "version": 2,
-  "builds": [
-    {
-      "src": "website/package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "build",
-        "buildCommand": "npm run build --workspace=website",
-        "outputDirectory": "website/build"
-      }
-    }
-  ],
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "installCommand": "npm ci",
+  "buildCommand": "npm run build --workspace=website",
+  "outputDirectory": "website/build",
   "functions": {
     "website/api/**/*.ts": {
       "runtime": "nodejs20.x"
     }
   },
-  "routes": [
+  "rewrites": [
     {
-      "src": "/api/(.*)",
-      "dest": "/website/api/$1.ts"
+      "source": "/api/:path*",
+      "destination": "/website/api/:path*.ts"
     }
-  ],
-  "installCommand": "npm install"
+  ]
 }
