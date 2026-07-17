@@ -1,6 +1,3 @@
-import OpenAI from 'openai';
-import fetch from 'node-fetch';
-
 const QDRANT_API_KEY = process.env.QDRANT_API_KEY;
 const QDRANT_URL = process.env.QDRANT_URL;
 const QDRANT_COLLECTION = process.env.QDRANT_COLLECTION || 'docusaurus_docs';
@@ -29,6 +26,15 @@ export interface QdrantSearchResult {
   payload: QdrantPointPayload;
 }
 
+function getVectorSizeForModel(model: string): number {
+  const mapping: Record<string, number> = {
+    'text-embedding-3-small': 1536,
+    'text-embedding-3-large': 3072,
+    'text-embedding-ada-002': 1536,
+  };
+  return mapping[model] ?? 1536;
+}
+
 async function qdrantRequest(path: string, body: unknown, method = 'POST') {
   const url = `${QDRANT_URL.replace(/\/$/, '')}${path}`;
   const response = await fetch(url, {
@@ -48,11 +54,10 @@ async function qdrantRequest(path: string, body: unknown, method = 'POST') {
   return response.json();
 }
 
-export async function ensureQdrantCollection() {
+export async function ensureQdrantCollection(embeddingModel = 'text-embedding-3-small') {
   const collectionUrl = `/collections/${QDRANT_COLLECTION}`;
   const existsResponse = await fetch(`${QDRANT_URL.replace(/\/$/, '')}${collectionUrl}`, {
     headers: {
-      'Content-Type': 'application/json',
       Authorization: `Bearer ${QDRANT_API_KEY}`,
     },
   });
@@ -60,7 +65,7 @@ export async function ensureQdrantCollection() {
   if (existsResponse.status === 404) {
     await qdrantRequest(collectionUrl, {
       vectors: {
-        size: 1536,
+        size: getVectorSizeForModel(embeddingModel),
         distance: 'Cosine',
       },
       optimizers_config: {

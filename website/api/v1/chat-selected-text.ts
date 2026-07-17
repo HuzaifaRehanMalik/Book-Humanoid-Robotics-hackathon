@@ -18,9 +18,15 @@ export default async function handler(req: any, res: any) {
   try {
     const prompt = buildChatPrompt(query, [
       {
+        id: `selected-text-${Date.now()}`,
         title: 'Selected Text',
-        source: 'selected_text',
-        content: selected_text,
+        filePath: 'selected_text',
+        slug: '/selected-text',
+        url: '',
+        sectionHeading: 'Selected Text',
+        text: selected_text.trim(),
+        modifiedAt: new Date().toISOString(),
+        score: 0,
       },
     ], user_preferences);
 

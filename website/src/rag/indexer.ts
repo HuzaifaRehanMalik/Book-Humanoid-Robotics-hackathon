@@ -1,23 +1,28 @@
 import path from 'node:path';
 import { collectMarkdownFiles, loadDocumentChunks, DocumentChunk } from './chunker';
-import { embedTexts } from './embeddings';
+import { embedTexts, getOpenAIEmbeddingModel } from './embeddings';
 import { ensureQdrantCollection, upsertQdrantPoints } from './qdrant';
 
 const DEFAULT_CHUNK_BATCH_SIZE = 32;
 
 export async function indexDocsIntoQdrant(docsRoot: string) {
-  await ensureQdrantCollection();
+  const absoluteDocsRoot = path.resolve(docsRoot);
+  await ensureQdrantCollection(getOpenAIEmbeddingModel());
 
-  const markdownFiles = await collectMarkdownFiles(docsRoot);
-  const chunksByFile = await Promise.all(markdownFiles.map((filePath) => loadDocumentChunks(filePath, docsRoot)));
+  const markdownFiles = await collectMarkdownFiles(absoluteDocsRoot);
+  const chunksByFile = await Promise.all(markdownFiles.map((filePath) => loadDocumentChunks(filePath, absoluteDocsRoot)));
   const chunks = chunksByFile.flat();
 
-  if (chunks.length === 0) {
+  const uniqueChunks = Array.from(
+    new Map(chunks.map((chunk) => [chunk.id, chunk])).values()
+  );
+
+  if (uniqueChunks.length === 0) {
     return { indexed: 0 };
   }
 
-  for (let start = 0; start < chunks.length; start += DEFAULT_CHUNK_BATCH_SIZE) {
-    const batch = chunks.slice(start, start + DEFAULT_CHUNK_BATCH_SIZE);
+  for (let start = 0; start < uniqueChunks.length; start += DEFAULT_CHUNK_BATCH_SIZE) {
+    const batch = uniqueChunks.slice(start, start + DEFAULT_CHUNK_BATCH_SIZE);
     const texts = batch.map((chunk) => chunk.text);
     const embeddings = await embedTexts(texts);
 
@@ -38,5 +43,5 @@ export async function indexDocsIntoQdrant(docsRoot: string) {
     await upsertQdrantPoints(points);
   }
 
-  return { indexed: chunks.length, files: markdownFiles.length };
+  return { indexed: uniqueChunks.length, files: markdownFiles.length };
 }

@@ -13,15 +13,30 @@ export default async function handler(req: any, res: any) {
 
   try {
     const docs = typeof context === 'string' && context.trim().length > 0
-      ? [{ title: 'Provided context', source: 'user', content: context }]
-      : await findRelevantDocs(query, 3);
+      ? [{
+          id: `provided-context-${Date.now()}`,
+          title: 'Provided context',
+          filePath: 'provided_context',
+          slug: '/provided-context',
+          url: '',
+          sectionHeading: 'Provided context',
+          text: context.trim(),
+          modifiedAt: new Date().toISOString(),
+          score: 0,
+        }]
+      : await findRelevantDocs(query, 8);
 
     const prompt = buildChatPrompt(query, docs, user_preferences);
     const answer = await generateOpenAIAnswer(prompt);
 
     return res.status(200).json({
       response: answer,
-      sources: docs.map((doc) => doc.title),
+      sources: docs.map((doc) => ({
+        title: doc.title,
+        filePath: doc.filePath,
+        sectionHeading: doc.sectionHeading,
+        url: doc.url,
+      })),
     });
   } catch (error: any) {
     console.error('chat handler error:', error);

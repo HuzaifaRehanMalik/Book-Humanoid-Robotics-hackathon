@@ -1,5 +1,5 @@
-import { retrieveRelevantChunks, SearchContextChunk } from '../../rag/search';
-import { createOpenAIClient, getOpenAIModel } from '../../rag/embeddings';
+import { retrieveRelevantChunks, SearchContextChunk } from '../../src/rag/search';
+import { createOpenAIClient, getOpenAIModel } from '../../src/rag/embeddings';
 
 export interface UserPreferences {
   user_id?: string;

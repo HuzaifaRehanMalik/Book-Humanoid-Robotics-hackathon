@@ -35,8 +35,8 @@ export async function embedTexts(texts: string[]): Promise<EmbeddingResponse[]> 
     throw new Error('Unexpected embedding response from OpenAI.');
   }
 
-  return response.data.map((item) => ({
-    input: item.input as string,
+  return response.data.map((item, index) => ({
+    input: texts[index],
     embedding: item.embedding as number[],
   }));
 }

@@ -7,6 +7,7 @@ interface Message {
   content: string;
   role: 'user' | 'assistant';
   timestamp: Date;
+  sources?: string[];
 }
 
 interface SidebarChatProps {
@@ -88,6 +89,12 @@ const SidebarChat: React.FC<SidebarChatProps> = ({ isOpen, onClose }) => {
         content: data.response ?? data.answer ?? 'Sorry, there was no answer returned.',
         role: 'assistant',
         timestamp: new Date(),
+        sources: Array.isArray(data.sources)
+          ? data.sources.map((source: any) => {
+              if (typeof source === 'string') return source;
+              return source.title || source.filePath || source.url || '';
+            }).filter(Boolean)
+          : [],
       };
 
       setMessages(prev => [...prev, assistantMessage]);
@@ -136,6 +143,11 @@ const SidebarChat: React.FC<SidebarChatProps> = ({ isOpen, onClose }) => {
               >
                 <div className={styles['sidebar-chat-message-content']}>
                   {message.content}
+                  {message.sources?.length ? (
+                    <div className={styles['sidebar-chat-message-sources']}>
+                      <strong>Sources:</strong> {message.sources.join(', ')}
+                    </div>
+                  ) : null}
                 </div>
                 <div className={styles['sidebar-chat-message-timestamp']}>
                   {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
