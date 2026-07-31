@@ -5,18 +5,16 @@ import SidebarChat from './SidebarChat/SidebarChat';
 const SidebarChatToggle: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
-
   return (
     <>
       <button
         className={styles['sidebar-chat-toggle-button']}
-        onClick={toggleSidebar}
-        aria-label={isSidebarOpen ? 'Close sidebar chat' : 'Open sidebar chat'}
+        onClick={() => setIsSidebarOpen((isOpen) => !isOpen)}
+        aria-label={isSidebarOpen ? 'Close chatbot' : 'Open chatbot'}
+        aria-expanded={isSidebarOpen}
+        type="button"
       >
-        💬
+        <span aria-hidden="true">Chat</span>
       </button>
       <SidebarChat
         isOpen={isSidebarOpen}
