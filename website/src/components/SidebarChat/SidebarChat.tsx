@@ -78,7 +78,8 @@ const SidebarChat: React.FC<SidebarChatProps> = ({ isOpen, onClose }) => {
       });
 
       if (!response.ok) {
-        throw new Error(`API request failed with status ${response.status}`);
+        const errorData = await response.json().catch(() => null);
+        throw new Error(errorData?.error || `API request failed with status ${response.status}`);
       }
 
       const data = await response.json();
@@ -102,7 +103,9 @@ const SidebarChat: React.FC<SidebarChatProps> = ({ isOpen, onClose }) => {
       console.error('Error getting response:', error);
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
-        content: 'Sorry, there was an error processing your request. Please try again.',
+        content: error instanceof Error
+          ? `Sorry, I could not answer that: ${error.message}`
+          : 'Sorry, there was an error processing your request. Please try again.',
         role: 'assistant',
         timestamp: new Date(),
       };

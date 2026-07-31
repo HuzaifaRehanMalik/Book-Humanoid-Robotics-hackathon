@@ -1,5 +1,6 @@
 import { embedTexts } from './embeddings';
-import { searchQdrant, QdrantSearchResult } from './qdrant';
+import { isQdrantConfigured, searchQdrant, QdrantSearchResult } from './qdrant';
+import { searchLocalDocs } from './local-search';
 
 export interface SearchContextChunk {
   id: string;
@@ -14,18 +15,21 @@ export interface SearchContextChunk {
 }
 
 export async function retrieveRelevantChunks(query: string, limit = 8): Promise<SearchContextChunk[]> {
-  const [embedding] = await embedTexts([query]);
-  const hits: QdrantSearchResult[] = await searchQdrant(embedding.embedding, limit);
+  if (!isQdrantConfigured()) {
+    return searchLocalDocs(query, limit);
+  }
 
-  return hits.map((hit) => ({
-    id: hit.id,
-    title: hit.payload.title,
-    filePath: hit.payload.filePath,
-    slug: hit.payload.slug,
-    url: hit.payload.url,
-    sectionHeading: hit.payload.sectionHeading,
-    text: hit.payload.text,
-    modifiedAt: hit.payload.modifiedAt,
-    score: hit.score,
-  }));
+  try {
+    const [embedding] = await embedTexts([query]);
+    const hits: QdrantSearchResult[] = await searchQdrant(embedding.embedding, limit);
+
+    return hits.map((hit) => ({
+      id: hit.id, title: hit.payload.title, filePath: hit.payload.filePath, slug: hit.payload.slug,
+      url: hit.payload.url, sectionHeading: hit.payload.sectionHeading, text: hit.payload.text,
+      modifiedAt: hit.payload.modifiedAt, score: hit.score,
+    }));
+  } catch (error) {
+    console.warn('Vector search unavailable; using local textbook search.', error);
+    return searchLocalDocs(query, limit);
+  }
 }

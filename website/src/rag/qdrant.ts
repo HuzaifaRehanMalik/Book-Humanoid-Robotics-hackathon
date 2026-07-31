@@ -1,13 +1,14 @@
-const QDRANT_API_KEY = process.env.QDRANT_API_KEY;
-const QDRANT_URL = process.env.QDRANT_URL;
-const QDRANT_COLLECTION = process.env.QDRANT_COLLECTION || 'docusaurus_docs';
-
-if (!QDRANT_URL) {
-  throw new Error('QDRANT_URL environment variable is required.');
+function getQdrantConfig() {
+  const url = process.env.QDRANT_URL;
+  const apiKey = process.env.QDRANT_API_KEY;
+  if (!url) {
+    throw new Error('Qdrant is not configured. Set QDRANT_URL to use vector search.');
+  }
+  return { url: url.replace(/\/$/, ''), apiKey, collection: process.env.QDRANT_COLLECTION || 'docusaurus_docs' };
 }
 
-if (!QDRANT_API_KEY) {
-  throw new Error('QDRANT_API_KEY environment variable is required.');
+export function isQdrantConfigured(): boolean {
+  return Boolean(process.env.QDRANT_URL);
 }
 
 export interface QdrantPointPayload {
@@ -36,12 +37,13 @@ function getVectorSizeForModel(model: string): number {
 }
 
 async function qdrantRequest(path: string, body: unknown, method = 'POST') {
-  const url = `${QDRANT_URL.replace(/\/$/, '')}${path}`;
+  const config = getQdrantConfig();
+  const url = `${config.url}${path}`;
   const response = await fetch(url, {
     method,
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${QDRANT_API_KEY}`,
+      ...(config.apiKey ? { Authorization: `Bearer ${config.apiKey}` } : {}),
     },
     body: JSON.stringify(body),
   });
@@ -55,10 +57,11 @@ async function qdrantRequest(path: string, body: unknown, method = 'POST') {
 }
 
 export async function ensureQdrantCollection(embeddingModel = 'text-embedding-3-small') {
-  const collectionUrl = `/collections/${QDRANT_COLLECTION}`;
-  const existsResponse = await fetch(`${QDRANT_URL.replace(/\/$/, '')}${collectionUrl}`, {
+  const config = getQdrantConfig();
+  const collectionUrl = `/collections/${config.collection}`;
+  const existsResponse = await fetch(`${config.url}${collectionUrl}`, {
     headers: {
-      Authorization: `Bearer ${QDRANT_API_KEY}`,
+      ...(config.apiKey ? { Authorization: `Bearer ${config.apiKey}` } : {}),
     },
   });
 
@@ -86,13 +89,15 @@ export async function upsertQdrantPoints(points: Array<{ id: string; vector: num
     return;
   }
 
-  await qdrantRequest(`/collections/${QDRANT_COLLECTION}/points?wait=true`, {
+  const { collection } = getQdrantConfig();
+  await qdrantRequest(`/collections/${collection}/points?wait=true`, {
     points,
   });
 }
 
 export async function searchQdrant(queryVector: number[], limit = 8): Promise<QdrantSearchResult[]> {
-  const response = await qdrantRequest(`/collections/${QDRANT_COLLECTION}/points/search`, {
+  const { collection } = getQdrantConfig();
+  const response = await qdrantRequest(`/collections/${collection}/points/search`, {
     vector: queryVector,
     limit,
     with_payload: true,

@@ -11,12 +11,12 @@ The website includes built-in API routes under `/api/v1` for the chatbot.
    cp .env.example .env
    ```
 
-2. Set your OpenAI API key in `website/.env`:
+2. Set your OpenAI API key in `website/.env` (or add it to the Vercel project environment variables):
    ```bash
    OPENAI_API_KEY=sk-...
    ```
 
-If you want to override the API base URL for a custom deployment, you can set `REACT_APP_API_BASE_URL`, but this is optional.
+The chatbot searches the book's `docs/` content automatically. Qdrant is optional: when it is configured, it is used for semantic search; otherwise the assistant falls back to local textbook search. If you want to override the API base URL for a custom deployment, you can set `REACT_APP_API_BASE_URL`, but this is optional.
 
 ## Installation
 
