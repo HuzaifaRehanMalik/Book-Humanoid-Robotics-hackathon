@@ -4,10 +4,9 @@
   "installCommand": "npm ci",
   "buildCommand": "npm run build --workspace=website",
   "outputDirectory": "website/build",
-  "rewrites": [
-    {
-      "source": "/api/:path*",
-      "destination": "/website/api/:path*.ts"
+  "functions": {
+    "api/v1/*.ts": {
+      "includeFiles": "website/docs/**"
     }
-  ]
+  }
 }

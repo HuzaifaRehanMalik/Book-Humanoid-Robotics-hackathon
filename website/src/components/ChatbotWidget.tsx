@@ -2,14 +2,7 @@ import React, { useState } from "react";
 import styles from "./ChatbotWidget.module.css";
 
 function getApiUrl() {
-  if (typeof window === 'undefined') {
-    return process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000';
-  }
-
-  return (
-    process.env.REACT_APP_API_BASE_URL ||
-    window.location.origin
-  );
+  return typeof window === 'undefined' ? '' : window.location.origin;
 }
 
 export default function ChatbotWidget() {

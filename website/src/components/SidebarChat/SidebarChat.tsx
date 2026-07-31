@@ -59,11 +59,9 @@ const SidebarChat: React.FC<SidebarChatProps> = ({ isOpen, onClose }) => {
         }
       }
 
-      // Determine API base URL based on environment variable
-      const apiBaseUrl = process.env.REACT_APP_API_BASE_URL ||
-        (typeof window !== 'undefined'
-          ? window.location.origin
-          : '');
+      // Docusaurus does not expose Node's `process` object in the browser.
+      // The API is served from the same Vercel deployment as the site.
+      const apiBaseUrl = typeof window !== 'undefined' ? window.location.origin : '';
 
       // Call the RAG API
       const response = await fetch(`${apiBaseUrl}/api/v1/chat`, {

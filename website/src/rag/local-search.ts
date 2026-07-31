@@ -3,7 +3,11 @@ import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import type { SearchContextChunk } from './search';
 
-const docsDirectory = join(process.cwd(), 'docs');
+// Local development runs from `website/`; Vercel functions run from the
+// repository root and include `website/docs` in their function bundle.
+const docsDirectory = existsSync(join(process.cwd(), 'docs'))
+  ? join(process.cwd(), 'docs')
+  : join(process.cwd(), 'website', 'docs');
 const stopWords = new Set(['about', 'after', 'and', 'are', 'for', 'from', 'how', 'into', 'the', 'this', 'what', 'when', 'where', 'with', 'your']);
 
 function getMarkdownFiles(directory: string): string[] {
